@@ -1,0 +1,30 @@
+id: CLAIM-0001
+source:
+  id: SRC-0015
+  file: "15_Large_Language_Models_Cannot_Self-Correct_2023.pdf"
+  title: "Large Language Models Cannot Self-Correct Reasoning Yet"
+  authors:
+    - "Jie Huang"
+    - "Xinyun Chen"
+    - "Swaroop Mishra"
+    - "Huaixiu Steven Zheng"
+    - "Adams Wei Yu"
+    - "Xinying Song"
+    - "Denny Zhou"
+  organization: "Google DeepMind; University of Illinois at Urbana-Champaign"
+  identifier: "arXiv:2310.01798v2 [cs.CL]"
+  location:
+    page: 1
+    section: "Abstract"
+    paragraph: 1
+claim:
+  type: empirical_result
+  text: "LLMs struggle to self-correct their responses without external feedback, and at times, their performance even degrades after self-correction."
+evidence:
+  quote: "In the context of reasoning, our research indicates that LLMs struggle to self-correct their responses without external feedback, and at times, their performance even degrades after self-correction."
+  extraction: manual_pdf_read
+  verified: true
+interpretation:
+  statement: "Автономная языковая модель не способна надежно исправлять собственные логические ошибки без внешнего независимого сигнала (тесты, линтеры, изолированный аудитор). Попытка самооценки и одновременного исправления кода в рамках одного агента ведёт к деградации качества, что обосновывает строгое архитектурное правило разделения ролей (Critic Never Repairs) и внешний детерминированный контур верификации."
+  confidence: supported
+status: VERIFIED

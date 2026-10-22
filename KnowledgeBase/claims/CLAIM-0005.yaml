@@ -1,0 +1,29 @@
+id: CLAIM-0005
+source:
+  id: SRC-0014
+  file: "14_SWE-Gate_Passing_Functional_Tests_Not_Enough.pdf"
+  title: "SWE-Gate: Passing Functional Tests Is Not Enough for Software Engineering Agents"
+  authors:
+    - "Xin He"
+    - "Yanlin Wang"
+    - "Mingwei Liu"
+    - "Jiachi Chen"
+    - "Hongyu Zhang"
+    - "Guanbin Li"
+  organization: "Sun Yat-sen University; Zhejiang University; Chongqing University"
+  identifier: "arXiv:2609.04167v1 [cs.SE]"
+  location:
+    page: 6
+    section: "RQ1: How Do Coding Agents Perform under SWE-Gate's Dual Evaluation?"
+    paragraph: 4
+claim:
+  type: empirical_result
+  text: "Across four evaluated models, 34.3% (221 out of 644) of generated patches that pass functional tests fail review constraint validation, representing hidden failures."
+evidence:
+  quote: "Across the four models, 644 generated patches pass the functional tests, but only 423 pass both test suites. SWE-Gate therefore identifies 221 hidden failures, corresponding to 34.3% of all functional successes. The HFR ranges from 29.5% for GPT-5.5 to 53.6% for GPT-4o-mini."
+  extraction: manual_pdf_read
+  verified: true
+interpretation:
+  statement: "Успешного прохождения функциональных юнит-тестов недостаточно для гарантии корректности программного кода: более трети (34.3%) функционально успешных патчей нарушают нефункциональные и ревью-ограничения (hidden failures). Это требует раздельного двухмерного гейта, независимо валидирующего как функционал, так и соответствие архитектурным инвариантам."
+  confidence: supported
+status: VERIFIED

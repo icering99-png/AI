@@ -1,0 +1,37 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "CriticVerdict",
+  "description": "Схема структурированного вердикта Rules Critic (Gate 6). Критик не чинит код, а возвращает строгий статус.",
+  "type": "object",
+  "properties": {
+    "verdict": {
+      "type": "string",
+      "enum": ["PASS", "REJECT"],
+      "description": "Бинарный статус проверки"
+    },
+    "rule_id": {
+      "type": "string",
+      "description": "Идентификатор нарушенного правила или оракула (например, R001, GATE-01, SYNTAX-01)"
+    },
+    "evidence": {
+      "type": "string",
+      "description": "Фактическое основание вердикта (лог теста, diff, строка сбоя)"
+    },
+    "required_change": {
+      "type": "string",
+      "description": "Требование к изменению без готового кода проекта"
+    }
+  },
+  "required": ["verdict"],
+  "allOf": [
+    {
+      "if": {
+        "properties": { "verdict": { "const": "REJECT" } }
+      },
+      "then": {
+        "required": ["rule_id", "evidence", "required_change"]
+      }
+    }
+  ],
+  "additionalProperties": false
+}

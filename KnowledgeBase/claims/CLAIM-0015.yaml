@@ -1,0 +1,24 @@
+id: CLAIM-0015
+source:
+  id: SRC-0024
+  primary_source: "OWASP Top 10 for Large Language Model Applications 2025 & Addy Osmani (adverse: Multi-agent adversarial code review)"
+  local_artifact: "Дерево построения папок/17_OWASP_LLM_Top_10_2025/01_OWASP_LLM_Top_10_2025.html; Дерево построения папок/21_addyosmani_adverse/README.md"
+  extraction_mode: "security_standard_and_adversarial_spec"
+  title: "LLM06:2025 Excessive Agency and Adversarial Cross-Validation Review"
+  authors:
+    - "OWASP GenAI Security Project"
+    - "Addy Osmani"
+  organization: "OWASP Foundation; Google Chrome Team"
+  location:
+    section: "LLM06:2025 Excessive Agency; adverse review README"
+claim:
+  type: empirical_result
+  text: "Single-agent LLM systems exhibit excessive agency vulnerabilities and review blind spots that require multi-agent adversarial cross-examination to eliminate hallucinations and confirm defects independently."
+evidence:
+  quote: "Multi-agent adversarial code review for any coding agent... round 1: 3 reviewers in parallel... round 2: 3 reviewers cross-examining... Cross-validated findings (multiple reviewers reported independently)."
+  extraction: security_standard_and_adversarial_spec
+  verified: true
+interpretation:
+  statement: "Предоставление автономной модели неограниченных прав на генерацию и утверждение кода без состязательного арбитража создает критический риск чрезмерных полномочий (OWASP LLM06). Безопасный консилиум обязан включать разнородные параллельные роли (Auditor, Adversary), чьи вердикты взаимно перекрестно валидируются детерминированным оракулом."
+  confidence: supported
+status: VERIFIED

@@ -1,0 +1,25 @@
+id: CLAIM-0012
+source:
+  id: SRC-0021
+  primary_source: "Phyllis G. Frankl, Stewart N. Weiss, Cang Hu (Journal of Systems and Software 1997, DOI: 10.1016/S0164-1212(96)00154-9)"
+  local_artifact: "Подтверждения/articles/06_Frankl_Weiss_Hu_All_Uses_vs_Mutation_Testing.md"
+  extraction_mode: "internal_curated_summary"
+  title: "All-uses vs. Mutation Testing: An Experimental Comparison of Effectiveness"
+  authors:
+    - "Phyllis G. Frankl"
+    - "Stewart N. Weiss"
+    - "Cang Hu"
+  organization: "Polytechnic University; Lehman College (CUNY)"
+  location:
+    section: "Ключевые результаты и выводы"
+claim:
+  type: empirical_result
+  text: "Mutation testing forces oracle sensitivity verification: test sets achieving all-uses coverage frequently fail to detect faults without mutation-adequate assertions."
+evidence:
+  quote: "Мутационное тестирование принудительно проверяет чувствительность тестового оракула: мутант считается уничтоженным (killed) только тогда, когда тест завершается с ошибкой (FAIL)."
+  extraction: internal_curated_summary
+  verified: true
+interpretation:
+  statement: "Обычное покрытие кода тестами не защищает от тавтологичных валидаторов. Для доверия к тестовому оракулу необходим мутационный тест: преднамеренное внедрение дефекта в код обязано вызывать отказ теста (FAIL). Пропуск мутанта оракулом аннулирует доверие к валидатору."
+  confidence: supported
+status: VERIFIED

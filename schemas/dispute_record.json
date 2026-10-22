@@ -1,0 +1,83 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "DisputeRecord",
+  "description": "Formal schema for recording adversarial disputes between author and critic roles",
+  "type": "object",
+  "required": [
+    "dispute_id",
+    "target_defect_id",
+    "status",
+    "initiator_role",
+    "iteration_count",
+    "arguments",
+    "created_at"
+  ],
+  "properties": {
+    "dispute_id": {
+      "type": "string",
+      "pattern": "^DISP-[0-9]{4}$"
+    },
+    "target_defect_id": {
+      "type": "string",
+      "pattern": "^(AUD-FITE-[0-9]{3}|DEF-[0-9]{3,4}|AUD-[0-9]{3,4})$"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "OPEN",
+        "PARTIAL",
+        "RESOLVED_AUTHOR",
+        "RESOLVED_CRITIC",
+        "ESCALATED_HUMAN",
+        "REJECTED_WITH_EVIDENCE"
+      ]
+    },
+    "initiator_role": {
+      "type": "string",
+      "maxLength": 50
+    },
+    "iteration_count": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 5
+    },
+    "arguments": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "round",
+          "role",
+          "claim",
+          "evidence"
+        ],
+        "properties": {
+          "round": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "role": {
+            "type": "string"
+          },
+          "claim": {
+            "type": "string"
+          },
+          "evidence": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "resolution": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "created_at": {
+      "type": "string"
+    }
+  },
+  "additionalProperties": false
+}

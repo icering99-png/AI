@@ -1,0 +1,28 @@
+id: CLAIM-0002
+source:
+  id: SRC-0016
+  file: "16_When_Can_LLMs_Actually_Correct_Their_Own_Mistakes_2024.pdf"
+  title: "When Can LLMs Actually Correct Their Own Mistakes? A Critical Survey of Self-Correction of LLMs"
+  authors:
+    - "Ryo Kamoi"
+    - "Yusen Zhang"
+    - "Nan Zhang"
+    - "Jiawei Han"
+    - "Rui Zhang"
+  organization: "Penn State University; University of Illinois Urbana-Champaign"
+  identifier: "arXiv:2406.01297v3 [cs.CL]"
+  location:
+    page: 1
+    section: "Abstract"
+    paragraph: 1
+claim:
+  type: empirical_result
+  text: "Self-correction works well in tasks that can use reliable external feedback, while no prior work demonstrates successful self-correction with feedback from prompted LLMs."
+evidence:
+  quote: "Our critical survey based on the newly categorized research questions shows that (1) no prior work demonstrates successful self-correction with feedback from prompted LLMs, except for studies in tasks that are exceptionally suited for self-correction, (2) self-correction works well in tasks that can use reliable external feedback, and (3) large-scale fine-tuning enables self-correction."
+  extraction: manual_pdf_read
+  verified: true
+interpretation:
+  statement: "Успешная коррекция ошибок ИИ возможна исключительно при наличии надежной внешней обратной связи (reliable external feedback: детерминированные тесты, AST-валидаторы, внешние инструменты). Попытки исправления через повторный промпт той же модели без внешнего сигнала статистически безрезультатны, что подтверждает необходимость независимого контура верификации (External Verifier)."
+  confidence: supported
+status: VERIFIED

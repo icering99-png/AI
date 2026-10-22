@@ -1,0 +1,19 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "antigravity-core-standard",
+  "version": "1.0.0",
+  "description": "Autonomous evidence-based L0-L4 AI architecture standard",
+  "author": "Antigravity Team",
+  "skills": [
+    "./skills/asd_ste100_protocol",
+    "./skills/gauntlet_loop",
+    "./skills/prompt_refactor_pocock"
+  ],
+  "rules": [
+    "./rules/02_UNIVERSAL_AI_GOVERNANCE.md",
+    "./rules/CODING_STANDARDS.md"
+  ],
+  "hooks": {
+    "pre_commit": "./.git/hooks/pre-commit"
+  }
+}

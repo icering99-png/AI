@@ -1,0 +1,12 @@
+﻿# Логи и отчеты
+*.log
+logs/*.log
+
+# Кэш Python и тестов
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# Секреты и конфигурации
+.env
+*.tmp

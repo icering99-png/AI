@@ -1,0 +1,26 @@
+id: CLAIM-0013
+source:
+  id: SRC-0022
+  primary_source: "Neal Ford, Rebecca Parsons, Patrick Kua, Pramod Sadalage (Building Evolutionary Architectures, O'Reilly)"
+  local_artifact: "Подтверждения/articles/01_InfoQ_Fitness_Functions_for_Your_Architecture.md"
+  extraction_mode: "article_reprint_and_synthesis"
+  title: "Fitness Functions for Your Architecture"
+  authors:
+    - "Neal Ford"
+    - "Rebecca Parsons"
+    - "Patrick Kua"
+    - "Thomas Much"
+  organization: "ThoughtWorks; InfoQ"
+  location:
+    section: "What are fitness functions?"
+claim:
+  type: empirical_result
+  text: "Architectural fitness functions provide automated objective guardrails that assess system characteristics continuously, operating as unit tests for software architecture."
+evidence:
+  quote: "An architectural fitness function is any mechanism that provides an objective integrity assessment of some architectural characteristic(s). Fitness functions provide such guardrails with objective measures; they can be thought of as automated (unit) tests for your architecture."
+  extraction: article_reprint_and_synthesis
+  verified: true
+interpretation:
+  statement: "Архитектурные ограничения и инварианты не могут полагаться на субъективные мнения или устные соглашения. Они обязаны быть автоматизированы в виде объективных измеримых тестов (Fitness Functions) в контуре CI/CD, которые немедленно блокируют сборку при возникновении недопустимых зависимостей или превышении порогов сложности."
+  confidence: supported
+status: VERIFIED

@@ -1,0 +1,26 @@
+id: CLAIM-0006
+source:
+  id: SRC-0003
+  file: "03_Recovering_Software_Architecture_Intent_GenAI.pdf"
+  title: "Recovering Software Architecture Intent from Historical Work Items using Generative AI: A Mixed-Methods Industry Case Study"
+  authors:
+    - "Dominik Storck"
+    - "Tobias Eisenreich"
+    - "Stefan Wagner"
+  organization: "Technical University of Munich, Germany"
+  identifier: "arXiv:2608.28403v1 [cs.SE]; DOI: 10.1145/3843775.3844549"
+  location:
+    page: 5
+    section: "6.2 Quantitative Structural Stability"
+    paragraph: 1
+claim:
+  type: empirical_result
+  text: "In automated software architecture recovery, node generation exhibits substantially lower relative variance (CV = 6.6% to 15.2%) than edge (relationship) generation across repeated iterations."
+evidence:
+  quote: "Across both projects, node generation exhibited lower variance than edge generation. Project A node generation was most stable (CV = 6.6%), anchoring at 7 nodes in 70% of iterations. Project B showed slightly more variance (CV = 15.2%) but established a dominant baseline of 7 nodes in 60% of runs. In contrast, edge generation displayed a broader distribution"
+  extraction: manual_pdf_read
+  verified: true
+interpretation:
+  statement: "Языковые модели надежно воспроизводят архитектурные сущности (узлы графа с коэффициентом вариации CV 6.6–15.2%), однако связи и отношения между ними (edges) обладают существенно более высокой нестабильностью. Это эмпирически доказывает, что ключевой точкой архитектурной деградации в LLM являются именно межкомпонентные отношения, требующие отдельной детерминированной проверки связей (edge verification) в графе трассируемости."
+  confidence: supported
+status: VERIFIED
