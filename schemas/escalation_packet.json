@@ -1,0 +1,30 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "EscalationMicroPacket",
+  "description": "Сверхкомпактный микро-пакет эскалации к Gemini (Звено 3 -> 4). Абсолютный лимит сериализованной JSON-строки: <= 300 символов суммарно.",
+  "type": "object",
+  "properties": {
+    "g": {
+      "type": "string",
+      "maxLength": 50,
+      "description": "Цель шага телеграфным стилем"
+    },
+    "c": {
+      "type": "string",
+      "maxLength": 100,
+      "description": "Проблемный фрагмент кода (1-2 строки)"
+    },
+    "e": {
+      "type": "string",
+      "maxLength": 60,
+      "description": "Тип и локация ошибки без трейса"
+    },
+    "w": {
+      "type": "string",
+      "maxLength": 50,
+      "description": "Ожидаемый инвариант / микро-сигнатура"
+    }
+  },
+  "required": ["g", "c", "e", "w"],
+  "additionalProperties": false
+}

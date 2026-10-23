@@ -1,0 +1,15 @@
+{
+  "gate1-security-gate": {
+    "enabled": true,
+    "PreToolUse": [
+      {
+        "matcher": "edit_file|write_file|run_command",
+        "hooks": [
+          {
+            "command": "python ../core/pre_tool_guard.py"
+          }
+        ]
+      }
+    ]
+  }
+}

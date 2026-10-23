@@ -1,0 +1,23 @@
+{"timestamp": 1792193029.1218083, "step": "SUB-01", "free_vram_mib": 5967, "model": "qwen2.5-coder:1.5b", "gen_output": "def add(a, b):\n    return a + b", "unloaded": true, "status": "PASS"}
+{"timestamp": 1792193040.3497152, "step": "SUB-02", "query": "stop-gates", "files_matched": 2, "top_file": "AI_CAD_KB.md", "snippet_len": 5605, "status": "PASS"}
+{"timestamp": 1792193055.5480633, "step": "SUB-03", "action": "save_dialog_turn", "error": "user_id Field required", "retry": "adding user_id", "status": "RETRY"}
+{"timestamp": 1792193078.8652225, "step": "SUB-03", "action": "get_user_dialog", "turn_id": 501, "journal_mode": "wal", "integrity": "ok", "content_match": true, "status": "PASS"}
+{"timestamp": 1792193128.3211474, "step": "SUB-04", "target": "core/runner.py", "diff_lines": 8, "defense_guard": "PASS", "tests": "94/94 PASS", "status": "PASS"}
+{"timestamp": 1792197095.7103844, "step": "SUB-01A", "file": "KnowledgeBase/claims/CLAIM-0012.yaml", "provenance": "internal_curated_summary", "status": "PASS"}
+{"timestamp": 1792197120.3953001, "step": "SUB-01B", "file": "KnowledgeBase/claims/CLAIM-0013.yaml", "provenance": "article_reprint_and_synthesis", "status": "PASS"}
+{"timestamp": 1792197148.9318638, "step": "SUB-01C", "file": "KnowledgeBase/claims/CLAIM-0014.yaml", "provenance": "standards_specification_overview", "status": "PASS"}
+{"timestamp": 1792197183.0572493, "step": "SUB-01D", "file": "KnowledgeBase/claims/CLAIM-0015.yaml", "provenance": "security_standard_and_adversarial_spec", "status": "PASS"}
+{"timestamp": 1792197207.9193332, "step": "SUB-01E", "file": "KnowledgeBase/claims/CLAIM-0016.yaml", "provenance": "engineering_standard_specification", "status": "PASS"}
+{"timestamp": 1792197235.7720358, "step": "SUB-02A", "file": "KnowledgeBase/rules/00_core/R003_cost_router_tiering.md", "lines": 23, "status": "PASS"}
+{"timestamp": 1792197311.9091132, "step": "SUB-02B", "file": "KnowledgeBase/rules/00_core/R004_asymmetric_arbitration.md", "lines": 22, "status": "PASS"}
+{"timestamp": 1792197340.6211624, "step": "SUB-02C", "file": "KnowledgeBase/rules/00_core/R005_anti_sycophancy.md", "lines": 23, "status": "PASS"}
+{"timestamp": 1792197385.9115555, "step": "SUB-03", "file": "KnowledgeBase/manifest.yaml", "claims": 16, "rules": 5, "status": "PASS"}
+{"timestamp": 1792197477.6658542, "step": "SUB-04", "file": "tests/test_concilium_stress.py", "mutants_caught": "5/5", "false_pass": "0.0%", "elapsed_sec": 1.501, "status": "PASS"}
+{"timestamp": 1792197524.5416749, "step": "SUB-05", "file": "core/runner.py", "diff_lines": 4, "verify_canary": true, "tests": "107/107 PASS", "status": "PASS"}
+{"timestamp": 1792197628.232988, "step": "SUB-06", "action": "sync_and_gate6_audit", "files_mirrored": 11, "drift": 0, "tests_root": "107/107 PASS", "tests_portable": "107/107 PASS", "gate6": "ALL_PASS", "status": "PASS"}
+{"timestamp": 1792198872.9071772, "step": "SUB-01B", "target": "core/audit_logger.py", "status": "PASS", "entry_hash": "4e136828fce2e151", "tests": "2/2 PASS", "test_file": "tests/test_audit_logger_integrity.py"}
+{"timestamp": 1792199140.1550617, "step": "SUB-01C", "target": "core/runner.py", "status": "PASS", "entry_hash": "06432b16cd37a459", "pipeline_tests": "11/11 PASS", "diff_lines": 14}
+{"timestamp": 1792199254.4270906, "step": "SUB-02B", "target": "G:/AI/Программка/Antigravity/EVIDENCE_BASE_SOURCES_AND_LINKS.md", "status": "PASS", "entry_hash": "3b0e4afd30317e47", "consistency_test": "1/1 PASS", "sources_registered": "SRC-20..25"}
+{"timestamp": 1792199336.50078, "step": "SUB-03B", "target": "core/defense_guard.py", "status": "PASS", "entry_hash": "d077dc352024a14f", "defense_obfuscation": "2/3 PASS", "concilium_stress": "7/7 PASS", "diff_lines": 14}
+{"timestamp": 1792199396.2432897, "step": "SUB-03C", "target": "core/rules_critic.py", "status": "PASS", "entry_hash": "182b9c51c9d72cb3", "obfuscation_tests": "3/3 PASS", "concilium_stress": "7/7 PASS", "diff_lines": 9}
+{"timestamp": 1792199514.2674255, "step": "SUB-04", "target": "TEMPLATE_PORTABLE/", "status": "PASS", "entry_hash": "2ef8d2e0a5326a8c", "root_tests": "113/113 PASS", "portable_tests": "113/113 PASS", "drift": "0%"}

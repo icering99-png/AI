@@ -1,0 +1,29 @@
+id: CLAIM-0009
+source:
+  id: SRC-0007
+  file: "07_SEI_Missed_Architectural_Dependencies_2016.pdf"
+  title: "Missed Architectural Dependencies: The Elephant in the Room"
+  authors:
+    - "Robert L. Nord"
+    - "Raghvinder Sangwan"
+    - "Julien Delange"
+    - "Peter Feiler"
+    - "Luke Thomas"
+    - "Ipek Ozkaya"
+  organization: "Software Engineering Institute, Carnegie Mellon University; Pennsylvania State University; Indiana University-Purdue University Indianapolis"
+  identifier: "DOI 10.1109/WICSA.2016.32 (2016 13th Working IEEE/IFIP Conference on Software Architecture)"
+  location:
+    page: 1
+    section: "Abstract"
+    paragraph: 1
+claim:
+  type: empirical_result
+  text: "While engineering tools provide coverage of design concerns, they miss implications of end-to-end integration testing, latency, and cost of change, as focusing on data and control flow leads to missing many data-entity relationships, resource behavior, and deployment-related dependencies."
+evidence:
+  quote: "While the engineering tools provided coverage of design concerns, they missed implications of end-to-end integration testing, latency, and cost of change. In our study, we observed that the tools led the engineers to focus on data and control flow and therefore to miss many data-entity relationships, resource behavior, and deployment-related dependencies."
+  extraction: manual_pdf_read
+  verified: true
+interpretation:
+  statement: "Ограничение анализа исключительно потоком данных и управления (data and control flow) скрывает сквозные зависимости между сущностями данных, поведением ресурсов и развертыванием. Это обосновывает необходимость мульти-ракурсного анализа зависимостей (multi-view dependency analysis) при проектировании и оценке влияния изменений."
+  confidence: supported
+status: VERIFIED

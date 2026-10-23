@@ -1,0 +1,25 @@
+id: CLAIM-0014
+source:
+  id: SRC-0023
+  primary_source: "NIST Special Publication 800-218, Secure Software Development Framework (SSDF) Version 1.1"
+  local_artifact: "Дерево построения папок/16_NIST_SSDF_and_AI_RMF/01_NIST_SSDF_Overview.md"
+  extraction_mode: "standards_specification_overview"
+  title: "Secure Software Development Framework (SSDF) Version 1.1: Recommendations for Mitigating the Risk of Software Vulnerabilities"
+  authors:
+    - "Murugiah Souppaya"
+    - "Karen Scarfone"
+    - "Donna Dodson"
+  organization: "National Institute of Standards and Technology (NIST)"
+  location:
+    section: "New in Version 1.1: Tasks"
+claim:
+  type: standard_requirement
+  text: "Software development practices must systematically track security requirements and provenance data for all release components (Tasks PS.3.2 and PW.1.2) to prevent unauthorized tampering and supply chain vulnerability injection."
+evidence:
+  quote: "Added PS.3.2 on collecting and sharing provenance data for all components of software releases. Added PW.1.2 on tracking software security requirements, risks, and design decisions."
+  extraction: standards_specification_overview
+  verified: true
+interpretation:
+  statement: "Каждый программный компонент и модификация системы обязаны сопровождаться непрерывным сбором данных происхождения (provenance metadata) и явной фиксацией архитектурных требований безопасности. Непроверенные или сторонние артефакты без доказанного провенанса подлежат блокировке в точке входа (Gate 10 Fail-Closed)."
+  confidence: supported
+status: VERIFIED

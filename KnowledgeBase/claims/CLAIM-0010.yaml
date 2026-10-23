@@ -1,0 +1,31 @@
+id: CLAIM-0010
+source:
+  id: SRC-0018
+  file: "18_Software_Architecture_Meets_LLMs_Systematic_Review_2025.pdf"
+  title: "Software Architecture Meets LLMs: A Systematic Literature Review"
+  authors:
+    - "Larissa Schmid"
+    - "Tobias Hey"
+    - "Martin Armbruster"
+    - "Sophie Corallo"
+    - "Dominik Fuchss"
+    - "Jan Keim"
+    - "Haoyu Liu"
+    - "Anne Koziolek"
+  organization: "KTH Royal Institute of Technology, Stockholm, Sweden; Karlsruhe Institute of Technology (KIT), Karlsruhe, Germany"
+  identifier: "arXiv:2505.16697v1 [cs.SE] 22 May 2025"
+  location:
+    page: 11
+    section: "4 Discussion"
+    paragraph: 2
+claim:
+  type: research_gap
+  text: "In the software architecture domain, literature reveals no articles addressing evaluation of quality aspects of software architecture (such as evolvability) or automated architecture conformance checking using LLMs."
+evidence:
+  quote: "Surprisingly, we found only one work generating source code for architectural components using LLMs [3]. Also, there is only one paper regarding cloud-native computing and architecture [3], indicating a potential avenue for further research in this regard. We found no articles regarding evaluating quality aspects of software architecture, such as evolvability, and architecture conformance checking."
+  extraction: manual_pdf_read
+  verified: true
+interpretation:
+  statement: "Область оценки качественных аспектов архитектуры и проверки архитектурного соответствия (architecture conformance checking) силами LLM в литературе не изучена: опубликованные исследования отсутствуют. На основе этого факта нельзя делать вывод о способности или неспособности LLM решать данные задачи; это указание на исследовательский пробел (research gap), который следует учитывать как отсутствие академического прецедента и доказательной базы. Для обоснования правила о том, что LLM не может быть единственным архитектурным арбитром, надлежит использовать экспериментально подтверждённые сбои (в частности, CLAIM-0005 / SWE-Gate с 34.3% скрытых сбоев при прохождении функциональных тестов), а не пробелы в исследованиях."
+  confidence: supported
+status: VERIFIED

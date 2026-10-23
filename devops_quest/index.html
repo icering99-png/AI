@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DevOps Quest — Интерактивный тренажер: Git, CI/CD, Тестирование</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Верхняя панель (Header) -->
+    <header class="top-nav">
+      <div class="brand">
+        <span class="logo-icon">🌿</span>
+        <div class="brand-text">
+          <h1>DevOps Quest</h1>
+          <span class="sub-title">Интенсив: Git • PR/MR • Pytest • Playwright • CI/CD</span>
+        </div>
+      </div>
+
+      <div class="user-stats">
+        <div class="stat-badge">
+          <span class="badge-label">Уровень:</span>
+          <span id="user-level" class="badge-value highlight">Новичок</span>
+        </div>
+        <div class="stat-badge">
+          <span class="badge-label">Опыт (XP):</span>
+          <span id="user-xp" class="badge-value">0</span>
+        </div>
+        <div class="stat-badge">
+          <span class="badge-label">Готовность:</span>
+          <span id="user-readiness" class="badge-value accent">0%</span>
+        </div>
+        <div class="stat-badge">
+          <span class="badge-label">Серия:</span>
+          <span id="user-streak" class="badge-value accent">🔥 1 дн.</span>
+        </div>
+        <div class="action-buttons">
+          <button id="btn-bind-file" class="btn btn-sm" title="Привязать файл progress.json в папке игры — прогресс будет автоматически писаться в файл репозитория (Chrome/Edge)">🔗 Автосейв в файл</button>
+          <button id="btn-export-profile" class="btn btn-sm" title="Экспорт профиля в JSON">📥 Экспорт</button>
+          <button id="btn-import-profile" class="btn btn-sm" title="Импорт профиля из JSON">📤 Импорт</button>
+          <button id="btn-reset-profile" class="btn btn-sm btn-danger" title="Сбросить прогресс">🔄 Сброс</button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Навигационные вкладки -->
+    <nav class="main-tabs">
+      <button class="tab-btn active" data-tab="tab-curriculum">📚 Учебные модули (12)</button>
+      <button class="tab-btn" data-tab="tab-terminal">💻 Git-терминал и Граф</button>
+      <button class="tab-btn" data-tab="tab-pr">🔀 Pull Request и Конфликты</button>
+      <button class="tab-btn" data-tab="tab-cicd">⚙️ CI/CD Пайплайн</button>
+      <button class="tab-btn" data-tab="tab-exam">🎯 Экзамен / Собеседование</button>
+      <button class="tab-btn" data-tab="tab-cheatsheet">📖 Памятка Андрея и Справочник</button>
+    </nav>
+
+    <!-- Основное рабочее пространство -->
+    <main class="content-area">
+      <!-- ВКЛАДКА 1: Учебные модули -->
+      <section id="tab-curriculum" class="tab-pane active">
+        <div class="split-view">
+          <aside class="sidebar-modules">
+            <div class="sidebar-header">
+              <h3>Программа курса</h3>
+              <input type="text" id="module-search" placeholder="Поиск тем и команд..." class="input-search">
+            </div>
+            <div id="module-list" class="module-tree">
+              <!-- Рендерится через curriculum.js -->
+            </div>
+          </aside>
+          
+          <div class="lesson-viewer">
+            <div id="lesson-breadcrumbs" class="breadcrumbs">Модуль 1 > Основы контроля версий</div>
+            <article id="lesson-content" class="markdown-body">
+              <div class="empty-state">Выберите тему слева, чтобы начать обучение.</div>
+            </article>
+            <div class="lesson-footer">
+              <button id="btn-solve-quiz" class="btn btn-primary">Проверить знания по теме (+50 XP)</button>
+              <button id="btn-next-lesson" class="btn btn-secondary">Следующий урок →</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ВКЛАДКА 2: Git Терминал и Граф -->
+      <section id="tab-terminal" class="tab-pane">
+        <div class="terminal-workspace">
+          <div class="terminal-left">
+            <div class="terminal-header">
+              <span class="dot red"></span>
+              <span class="dot yellow"></span>
+              <span class="dot green"></span>
+              <span class="term-title">bash — danil@laptop: ~/project-mts (ветка: <span id="current-branch-label" class="branch-name">main</span>)</span>
+              <button id="btn-clear-term" class="btn btn-xs">Очистить</button>
+              <button id="btn-reset-repo" class="btn btn-xs btn-outline">Сбросить репозиторий</button>
+            </div>
+            <div id="terminal-output" class="terminal-body">
+              <div class="term-line info">Добро пожаловать в эмулятор Git! Вводите реальные команды:</div>
+              <div class="term-line info">Попробуйте: git status, git switch -c danil/feature, git add ., git commit -m "feat", git log</div>
+              <div class="term-line warning">ВНИМАНИЕ: Опасные стоп-слова (--force, reset --hard, clean) отслеживаются сторожевым стражем Андрея!</div>
+            </div>
+            <div class="terminal-input-row">
+              <span class="term-prompt">$ </span>
+              <input type="text" id="term-input" class="term-input" placeholder="Введите команду git (например: git status)..." autofocus>
+            </div>
+            <div class="quick-commands">
+              <span>Быстрые действия:</span>
+              <button class="cmd-chip" data-cmd="git status">git status</button>
+              <button class="cmd-chip" data-cmd="git switch -c danil/tariffs">создать ветку danil/tariffs</button>
+              <button class="cmd-chip" data-cmd="git add .">git add .</button>
+              <button class="cmd-chip" data-cmd="git commit -m &quot;Добавил ответ про тарифы&quot;">git commit</button>
+              <button class="cmd-chip" data-cmd="git push origin danil/tariffs">git push</button>
+              <button class="cmd-chip" data-cmd="git log --oneline">git log</button>
+              <button class="cmd-chip danger" data-cmd="git push --force origin main">тест: --force (стоп-слово)</button>
+            </div>
+          </div>
+
+          <div class="terminal-right">
+            <div class="panel-card">
+              <h4>📊 Визуальный граф веток и коммитов</h4>
+              <div id="git-graph-canvas" class="git-graph-container">
+                <!-- Отрисовывается графом -->
+              </div>
+            </div>
+
+            <div class="panel-card">
+              <h4>📁 Состояние рабочей копии и Staging</h4>
+              <div class="repo-state-grid">
+                <div>
+                  <div class="state-subhead">Рабочая копия (Working Tree):</div>
+                  <ul id="working-tree-files" class="file-list"></ul>
+                </div>
+                <div>
+                  <div class="state-subhead">Индекс (Staging Area):</div>
+                  <ul id="staged-files" class="file-list"></ul>
+                </div>
+              </div>
+            </div>
+
+            <div class="panel-card">
+              <h4>🛡️ Сторож Андрея (Safety Watchdog)</h4>
+              <div id="safety-log" class="safety-feed">
+                <div class="safety-item clean">Нарушений нет. Вы соблюдаете правила Андрея.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ВКЛАДКА 3: PR / MR и Конфликты -->
+      <section id="tab-pr" class="tab-pane">
+        <div class="pr-workspace">
+          <div class="pr-header-card">
+            <div class="pr-meta-row">
+              <span class="badge pr-open">Open</span>
+              <h2 id="pr-title">PR #12: Интеграция базы знаний тарифов для бота МТС</h2>
+            </div>
+            <div class="pr-details">
+              <span>Автор: <strong>danil</strong></span>
+              <span>Ветка: <code>danil/tariffs</code> → <code>main</code></span>
+              <span id="pr-status-badge" class="badge badge-warning">Требуется ревью Андрея</span>
+            </div>
+          </div>
+
+          <div class="pr-body-grid">
+            <div class="diff-viewer">
+              <div class="diff-header">
+                <h3>Измененные файлы (Diff)</h3>
+                <div class="diff-actions">
+                  <button id="btn-trigger-conflict" class="btn btn-sm btn-warning">Смоделировать конфликт слияния!</button>
+                </div>
+              </div>
+              <div id="diff-file-container" class="diff-content">
+                <!-- Файлы diff -->
+              </div>
+            </div>
+
+            <div class="review-sidebar">
+              <h3>Ревью от Андрея</h3>
+              <div id="review-comments" class="comments-list">
+                <div class="comment-box">
+                  <div class="comment-author">Андрей (Lead Architect)</div>
+                  <div class="comment-text">Данил, проверь: файл с тарифами добавил отлично, но не закоммитил ли ты секретный API-токен? И обязательно убедись, что нет конфликтов с последними изменениями в main.</div>
+                </div>
+              </div>
+              <div class="review-actions">
+                <button id="btn-request-review" class="btn btn-outline full-width">Запросить повторное ревью</button>
+                <button id="btn-merge-pr" class="btn btn-success full-width" disabled>Влить в main (Merge)</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Интерактивный тренажер разрешения конфликтов -->
+          <div id="conflict-resolver-card" class="conflict-card hidden">
+            <div class="conflict-banner">
+              ⚠️ <strong>ВНИМАНИЕ: ОБНАРУЖЕН MERGE-КОНФЛИКТ В <code>answers.py</code>!</strong>
+              <p>Вы и Андрей одновременно изменили приветствие бота. Разрешите конфликт прямо сейчас:</p>
+            </div>
+            <div class="conflict-editor">
+              <div class="conflict-pane incoming">
+                <div class="pane-title">Версия Андрея (Incoming / main)</div>
+                <pre id="conflict-incoming-code">greeting = "Добрый день! Я помощник МТС."</pre>
+                <button id="btn-accept-incoming" class="btn btn-sm btn-primary">Принять входящее (Accept Incoming)</button>
+              </div>
+              <div class="conflict-pane current">
+                <div class="pane-title">Ваша версия (Current / danil/tariffs)</div>
+                <pre id="conflict-current-code">greeting = "Здравствуйте! Чем я могу вам помочь?"</pre>
+                <button id="btn-accept-current" class="btn btn-sm btn-primary">Оставить моё (Accept Current)</button>
+              </div>
+            </div>
+            <div class="conflict-footer">
+              <button id="btn-accept-both" class="btn btn-sm btn-secondary">Объединить оба варианта (Accept Both)</button>
+              <button id="btn-abort-conflict" class="btn btn-sm btn-danger">Отменить слияние (git merge --abort)</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ВКЛАДКА 4: CI/CD Пайплайн -->
+      <section id="tab-cicd" class="tab-pane">
+        <div class="cicd-workspace">
+          <div class="cicd-top">
+            <div class="pipeline-status-card">
+              <div class="pipeline-meta">
+                <h3>GitHub Actions Workflow: <code>ci.yml</code></h3>
+                <span>Триггер: <code>pull_request [danil/tariffs]</code></span>
+              </div>
+              <div class="pipeline-actions">
+                <button id="btn-run-pipeline" class="btn btn-primary">▶ Запустить проверку Pipeline</button>
+                <button id="btn-break-pipeline" class="btn btn-warning">Смоделировать падение теста в CI</button>
+              </div>
+            </div>
+
+            <!-- Схема пайплайна -->
+            <div class="pipeline-graph">
+              <div class="pipeline-step" id="stage-lint">
+                <div class="step-icon">🔍</div>
+                <div class="step-info">
+                  <div class="step-title">1. Lint & Format</div>
+                  <div class="step-status status-pending">Ожидание</div>
+                </div>
+              </div>
+              <div class="pipeline-connector"></div>
+              <div class="pipeline-step" id="stage-unit">
+                <div class="step-icon">🧪</div>
+                <div class="step-info">
+                  <div class="step-title">2. Pytest Unit</div>
+                  <div class="step-status status-pending">Ожидание</div>
+                </div>
+              </div>
+              <div class="pipeline-connector"></div>
+              <div class="pipeline-step" id="stage-e2e">
+                <div class="step-icon">🎭</div>
+                <div class="step-info">
+                  <div class="step-title">3. Playwright E2E</div>
+                  <div class="step-status status-pending">Ожидание</div>
+                </div>
+              </div>
+              <div class="pipeline-connector"></div>
+              <div class="pipeline-step" id="stage-deploy">
+                <div class="step-icon">🚀</div>
+                <div class="step-info">
+                  <div class="step-title">4. Staging Deploy</div>
+                  <div class="step-status status-pending">Ожидание</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Логи выполнения пайплайна -->
+          <div class="pipeline-console">
+            <div class="console-head">
+              <span>Лог выполнения (Runner stdout): <strong id="active-stage-log-name">all</strong></span>
+              <button id="btn-fix-yaml" class="btn btn-xs btn-outline">Исправить тест и перезапустить</button>
+            </div>
+            <pre id="cicd-log-output" class="console-body">Нажмите "Запустить проверку Pipeline", чтобы выполнить виртуальный CI/CD запуск.</pre>
+          </div>
+        </div>
+      </section>
+
+      <!-- ВКЛАДКА 5: Экзамен и Собеседование -->
+      <section id="tab-exam" class="tab-pane">
+        <div class="exam-workspace">
+          <div class="exam-sidebar">
+            <div class="exam-selector-card">
+              <h3>Режимы проверки</h3>
+              <div class="mode-options">
+                <label class="mode-radio">
+                  <input type="radio" name="exam-mode" value="emergency" checked>
+                  <div>
+                    <strong>⚡ Экстренный интенсив (к завтрашнему дню)</strong>
+                    <p>Топ-30 самых каверзных вопросов по Git, PR, конфликтам и CI/CD</p>
+                  </div>
+                </label>
+                <label class="mode-radio">
+                  <input type="radio" name="exam-mode" value="full-blind">
+                  <div>
+                    <strong>🎓 Полный экзамен без подсказок</strong>
+                    <p>Все модули, оценка по компетенциям, подробный разбор ошибок</p>
+                  </div>
+                </label>
+                <label class="mode-radio">
+                  <input type="radio" name="exam-mode" value="simulation">
+                  <div>
+                    <strong>💼 Симулятор рабочего дня Данила</strong>
+                    <p>Сюжетная линия: проект МТС, задачи от Андрея, предотвращение аварий</p>
+                  </div>
+                </label>
+              </div>
+              <button id="btn-start-exam" class="btn btn-primary full-width">Начать тестирование</button>
+            </div>
+
+            <div class="competence-card">
+              <h4>Карта компетенций</h4>
+              <div class="competence-bar-group">
+                <div class="comp-item">
+                  <span>Git Основы & Ветки</span>
+                  <div class="progress-bar"><div id="comp-git" class="progress-fill" style="width: 0%"></div></div>
+                </div>
+                <div class="comp-item">
+                  <span>PR/MR & Конфликты</span>
+                  <div class="progress-bar"><div id="comp-pr" class="progress-fill" style="width: 0%"></div></div>
+                </div>
+                <div class="comp-item">
+                  <span>QA, Pytest & E2E</span>
+                  <div class="progress-bar"><div id="comp-qa" class="progress-fill" style="width: 0%"></div></div>
+                </div>
+                <div class="comp-item">
+                  <span>CI/CD & Деплой</span>
+                  <div class="progress-bar"><div id="comp-cicd" class="progress-fill" style="width: 0%"></div></div>
+                </div>
+                <div class="comp-item">
+                  <span>Безопасность & Инженерия</span>
+                  <div class="progress-bar"><div id="comp-sec" class="progress-fill" style="width: 0%"></div></div>
+                </div>
+                <div class="comp-item">
+                  <span>Культура больших компаний</span>
+                  <div class="progress-bar"><div id="comp-culture" class="progress-fill" style="width: 0%"></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="exam-main">
+            <div id="exam-card-container">
+              <div class="quiz-box empty-exam">
+                <h2>Готовы проверить себя?</h2>
+                <p>Выберите режим слева и нажмите «Начать тестирование». Вопросы проверяют не только знание определений, но и умение диагностировать сбои и объяснять причины решений.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ВКЛАДКА 6: Памятка Андрея и Справочник -->
+      <section id="tab-cheatsheet" class="tab-pane">
+        <div class="cheatsheet-workspace">
+          <div class="andrey-rules-banner">
+            <h2>🌿 Памятка Андрея для Данила: «Git без паники»</h2>
+            <div class="rules-grid">
+              <div class="rule-box gold">
+                <h3>⭐ Главное правило</h3>
+                <p><strong>Никогда не работаем в <code>main</code>!</strong> Работаем строго в своей ветке <code>danil/...</code> (например: <code>danil/tariffs</code>). В <code>main</code> код переносит только Андрей через Pull Request.</p>
+              </div>
+              <div class="rule-box danger">
+                <h3>⛔ Стоп-слова для ИИ (Gemini)</h3>
+                <p>Если Gemini предлагает выполнить: <code>--force</code>, <code>-f</code>, <code>reset --hard</code>, <code>clean</code>, <code>rebase</code>, <code>branch -D</code>, <code>push origin main</code> или удалить <code>.git</code> — <strong>жми REJECT</strong>!</p>
+              </div>
+              <div class="rule-box safe">
+                <h3>🔑 Безопасность и секреты</h3>
+                <p>Никогда не коммитить: пароли, API-ключи, <code>.env</code>, персональные данные (номера телефонов, ФИО клиентов) и выгрузки МТС. Проверяй список файлов в панели Git перед каждым коммитом.</p>
+              </div>
+              <div class="rule-box info">
+                <h3>🔄 4 шага каждый день</h3>
+                <p><strong>1. Забрать:</strong> <code>git pull</code> / Sync<br>
+                <strong>2. Работать:</strong> в ветке <code>danil/...</code><br>
+                <strong>3. Сохранить:</strong> <code>git commit -m "Понятный текст"</code><br>
+                <strong>4. Отправить:</strong> <code>git push</code> и открыть PR<br>
+                <strong>💡 Ленивый режим:</strong> дважды кликни <code>daily.bat</code> в папке игры — он сделает все 4 шага сам, включая сохранение <code>progress.json</code>.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="quick-ref-section">
+            <div class="ref-header">
+              <h3>Интерактивный справочник команд и терминов</h3>
+              <input type="text" id="ref-filter" class="input-search" placeholder="Фильтр по командам (revert, stash, detached HEAD, Playwright)...">
+            </div>
+            <div id="ref-cards-grid" class="ref-grid">
+              <!-- Карточки справочника -->
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Модальное окно для проверки знаний в уроке -->
+    <div id="modal-quiz" class="modal-overlay hidden">
+      <div class="modal-card">
+        <div class="modal-header">
+          <h3 id="modal-quiz-title">Вопрос по теме</h3>
+          <button id="modal-close-btn" class="close-btn">&times;</button>
+        </div>
+        <div id="modal-quiz-body" class="modal-body"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Подключение модулей данных и скриптов -->
+  <script src="data/curriculum.js"></script>
+  <script src="data/questions.js"></script>
+  <script src="js/git_simulator.js"></script>
+  <script src="js/workflow_simulator.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

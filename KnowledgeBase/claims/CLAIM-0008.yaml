@@ -1,0 +1,39 @@
+id: CLAIM-0008
+source:
+  id: SRC-0017
+  file: "17_Self-Refine_Iterative_Refinement_with_Self-Feedback_2023.pdf"
+  title: "SELF-REFINE: Iterative Refinement with Self-Feedback"
+  authors:
+    - "Aman Madaan"
+    - "Niket Tandon"
+    - "Prakhar Gupta"
+    - "Skyler Hallinan"
+    - "Luyu Gao"
+    - "Sarah Wiegreffe"
+    - "Uri Alon"
+    - "Nouha Dziri"
+    - "Shrimai Prabhumoye"
+    - "Yiming Yang"
+    - "Shashank Gupta"
+    - "Bodhisattwa Prasad Majumder"
+    - "Katherine Hermann"
+    - "Sean Welleck"
+    - "Amir Yazdanbakhsh"
+    - "Peter Clark"
+  organization: "Carnegie Mellon University; Allen Institute for AI; University of Washington; NVIDIA; UC San Diego; Google Research"
+  identifier: "arXiv:2303.17651v2 [cs.CL] 25 May 2023"
+  location:
+    page: "5-6"
+    section: "5 Results (Math Reasoning)"
+    paragraph: 4
+claim:
+  type: empirical_result
+  text: "In complex reasoning tasks, consistent-looking reasoning chains deceive LLMs into assuming 'everything looks good' in 94% of instances, while gains from refinement increase significantly (5%+) when an external source identifies errors."
+evidence:
+  quote: "The modest performance gains in Math Reasoning can be traced back to the inability to accurately identify whether there is any error. In math, errors can be nuanced and sometimes limited to a single line or incorrect operation. Besides, a consistent-looking reasoning chain can deceive LLMs to think that “everything looks good” (e.g., ChatGPT feedback for 94% instances is ’everything looks good’). In Appendix H.1, we show that the gains with SELF-REFINE on Math Reasoning are much bigger (5%+) if an external source can identify if the current math answer is incorrect."
+  extraction: manual_pdf_read
+  verified: true
+interpretation:
+  statement: "В логических и строгих вычислительных задачах внутренняя самооценка языковой модели слепа к ошибкам: правдоподобный ход рассуждений обманывает модель, приводя к ложному вердикту 'все в порядке' в 94% случаев. Значимый прирост качества (+5% и выше) достигается только при подключении внешнего источника проверки, способного детерминированно сигнализировать о наличии ошибки. Это формирует доказательную базу для внешнего независимого контура верификации (External Verifier / Gate)."
+  confidence: supported
+status: VERIFIED

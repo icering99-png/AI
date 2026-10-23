@@ -1,0 +1,107 @@
+version: "1.1.0"
+updated_at: "2026-10-17T03:36:00+03:00"
+description: "Корневой манифест научно-доказательной базы знаний (KnowledgeBase)"
+
+architecture:
+  traceability_chain: "SOURCE -> CLAIM -> RULE -> POLICY -> GATE -> EVIDENCE -> STATE"
+  invariants:
+    - "Fail-Closed: Неверифицированные клеймы не порождают исполняемых правил"
+    - "Critic Never Repairs: Запрет самооценки и правки в рамках одной роли"
+    - "Evidence-Only: Запрет субъективных подтверждений без сырого терминального вывода"
+
+claims_registry:
+  total_verified: 16
+  items:
+    - id: CLAIM-0001
+      file: "claims/CLAIM-0001.yaml"
+      source: "SRC-0015 (Google DeepMind / 2310.01798)"
+      status: VERIFIED
+    - id: CLAIM-0002
+      file: "claims/CLAIM-0002.yaml"
+      source: "SRC-0016 (Penn State / 2406.01297)"
+      status: VERIFIED
+    - id: CLAIM-0003
+      file: "claims/CLAIM-0003.yaml"
+      source: "SRC-0002 (TraceDev / 2607.18886)"
+      status: VERIFIED
+    - id: CLAIM-0004
+      file: "claims/CLAIM-0004.yaml"
+      source: "SRC-0004 (Formal Verification / 2501.12345)"
+      status: VERIFIED
+    - id: CLAIM-0005
+      file: "claims/CLAIM-0005.yaml"
+      source: "SRC-0014 (SWE-Gate / 2409.11223)"
+      status: VERIFIED
+    - id: CLAIM-0006
+      file: "claims/CLAIM-0006.yaml"
+      source: "SRC-0003 (Arch Intent / 2608.28403)"
+      status: VERIFIED
+    - id: CLAIM-0007
+      file: "claims/CLAIM-0007.yaml"
+      source: "SRC-0017 (Self-Refine / 2303.17651)"
+      status: VERIFIED
+    - id: CLAIM-0008
+      file: "claims/CLAIM-0008.yaml"
+      source: "SRC-0017 (Self-Refine / 2303.17651)"
+      status: VERIFIED
+    - id: CLAIM-0009
+      file: "claims/CLAIM-0009.yaml"
+      source: "SRC-0007 (SEI Missed Dependencies 2016 / 10.1109/WICSA.2016.32)"
+      status: VERIFIED
+    - id: CLAIM-0010
+      file: "claims/CLAIM-0010.yaml"
+      source: "SRC-0018 (Software Architecture Meets LLMs / 2505.16697)"
+      status: VERIFIED
+    - id: CLAIM-0011
+      file: "claims/CLAIM-0011.yaml"
+      source: "SRC-0020 (GitHub Copilot Agent Plugins 1.0)"
+      status: VERIFIED
+    - id: CLAIM-0012
+      file: "claims/CLAIM-0012.yaml"
+      source: "SRC-0021 (Frankl et al. JSS 1997 / local curated summary)"
+      status: VERIFIED
+    - id: CLAIM-0013
+      file: "claims/CLAIM-0013.yaml"
+      source: "SRC-0022 (Neal Ford, InfoQ 2025 / Building Evolutionary Architectures)"
+      status: VERIFIED
+    - id: CLAIM-0014
+      file: "claims/CLAIM-0014.yaml"
+      source: "SRC-0023 (NIST SP 800-218 SSDF v1.1 Tasks PW.1.2/PS.3.2)"
+      status: VERIFIED
+    - id: CLAIM-0015
+      file: "claims/CLAIM-0015.yaml"
+      source: "SRC-0024 (OWASP LLM06 2025 & Addy Osmani adverse review)"
+      status: VERIFIED
+    - id: CLAIM-0016
+      file: "claims/CLAIM-0016.yaml"
+      source: "SRC-0025 (NASA SWE-057 Architecture Design)"
+      status: VERIFIED
+
+rules_registry:
+  total_verified: 5
+  items:
+    - id: R001
+      file: "rules/00_core/R001_critic_never_repairs.md"
+      derived_from: ["CLAIM-0001", "CLAIM-0002", "CLAIM-0007", "CLAIM-0008"]
+      priority: CRITICAL
+      status: VERIFIED
+    - id: R002
+      file: "rules/00_core/R002_oracle_immutability.md"
+      derived_from: ["CLAIM-0001", "CLAIM-0002"]
+      priority: CRITICAL
+      status: VERIFIED
+    - id: R003
+      file: "rules/00_core/R003_cost_router_tiering.md"
+      derived_from: ["CLAIM-0004", "CLAIM-0010", "CLAIM-0016"]
+      priority: HIGH
+      status: VERIFIED
+    - id: R004
+      file: "rules/00_core/R004_asymmetric_arbitration.md"
+      derived_from: ["CLAIM-0005", "CLAIM-0015"]
+      priority: CRITICAL
+      status: VERIFIED
+    - id: R005
+      file: "rules/00_core/R005_anti_sycophancy.md"
+      derived_from: ["CLAIM-0001", "CLAIM-0002", "CLAIM-0015"]
+      priority: CRITICAL
+      status: VERIFIED

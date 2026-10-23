@@ -1,0 +1,39 @@
+id: CLAIM-0007
+source:
+  id: SRC-0017
+  file: "17_Self-Refine_Iterative_Refinement_with_Self-Feedback_2023.pdf"
+  title: "SELF-REFINE: Iterative Refinement with Self-Feedback"
+  authors:
+    - "Aman Madaan"
+    - "Niket Tandon"
+    - "Prakhar Gupta"
+    - "Skyler Hallinan"
+    - "Luyu Gao"
+    - "Sarah Wiegreffe"
+    - "Uri Alon"
+    - "Nouha Dziri"
+    - "Shrimai Prabhumoye"
+    - "Yiming Yang"
+    - "Shashank Gupta"
+    - "Bodhisattwa Prasad Majumder"
+    - "Katherine Hermann"
+    - "Sean Welleck"
+    - "Amir Yazdanbakhsh"
+    - "Peter Clark"
+  organization: "Carnegie Mellon University; Allen Institute for AI; University of Washington; NVIDIA; UC San Diego; Google Research"
+  identifier: "arXiv:2303.17651v2 [cs.CL] 25 May 2023"
+  location:
+    page: 8
+    section: "Qualitative Analysis"
+    paragraph: 2
+claim:
+  type: empirical_result
+  text: "When iterative self-refinement fails to improve output, 94% of failures stem from erroneous self-feedback (33% inaccurately pinpointing error location, 61% suggesting an inappropriate fix), with only 6% caused by faulty refinement implementation."
+evidence:
+  quote: "When SELF-REFINE failed to improve the original generation, the majority of issues were due to erroneous feedback rather than faulty refinements. Specifically, 33% of unsuccessful cases were due to feedback inaccurately pinpointing the error's location, while 61% were a result of feedback suggesting an inappropriate fix. Only 6% of failures were due to the refiner incorrectly implementing good feedback."
+  extraction: manual_pdf_read
+  verified: true
+interpretation:
+  statement: "Предел автономного self-refine обусловлен ненадежностью самооценки: 94% неудач итеративного исправления вызваны неспособностью модели правильно диагностировать ошибку (33%) или предложить адекватный патч (61%), тогда как сам исполнитель корректно применяет качественный фидбек в 94% случаев (только 6% сбоев реализации). Это строго доказывает, что узким местом является генерация фидбека самой моделью, обосновывая необходимость внешнего независимого верификатора."
+  confidence: supported
+status: VERIFIED

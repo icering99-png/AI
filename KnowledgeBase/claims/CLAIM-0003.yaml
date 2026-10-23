@@ -1,0 +1,31 @@
+id: CLAIM-0003
+source:
+  id: SRC-0002
+  file: "02_TraceDev_Traceability-Driven_Multi-agent_Framework.pdf"
+  title: "TraceDev: A Traceability-Driven Multi-agent Framework for Requirement-to-Code Development"
+  authors:
+    - "Mingyu Chen"
+    - "Yakun Zhang"
+    - "Zihao Xie"
+    - "Yixing Luo"
+    - "Jinrui Xu"
+    - "Cuiyun Gao"
+    - "Kaiqi Zhao"
+    - "Yunming Ye"
+  organization: "Harbin Institute of Technology, Shenzhen; Nanjing University; Beijing Institute of Control Engineering"
+  identifier: "arXiv:2607.18886v1 [cs.SE]; DOI: 10.1145/3832171"
+  location:
+    page: 1
+    section: "Abstract"
+    paragraph: 1
+claim:
+  type: empirical_result
+  text: "TraceDev achieves a success rate of 53.63% on the ETOUR dataset, outperforming baseline approaches by up to 186.63% relative improvement, and 56.82% on the SMOS dataset."
+evidence:
+  quote: "On the ETOUR dataset, TraceDev achieves a success rate of 53.63%, outperforming baseline approaches by up to 186.63%. A similar trend is observed on the SMOS dataset, where TraceDev attains a success rate of 56.82%"
+  extraction: manual_pdf_read
+  verified: true
+interpretation:
+  statement: "Показатель 186.63% отражает относительное превышение над бейзлайном MetaGPT (Таблица 1, стр. 15: baseline MetaGPT на ETOUR с Gemini-2.5-Flash равен 18.71%, ChatDev — 23.40%, тогда как TraceDev достигает 53.63%, что даёт +34.92 п.п. абсолютного и 186.64% относительного прироста). Это доказывает, что явное ведение графа трассируемости между требованиями, дизайном и кодом кардинально снижает архитектурные разрывы при генерации репозиторного кода."
+  confidence: supported
+status: VERIFIED

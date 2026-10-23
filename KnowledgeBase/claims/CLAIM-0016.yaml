@@ -1,0 +1,24 @@
+id: CLAIM-0016
+source:
+  id: SRC-0025
+  primary_source: "NASA Software Engineering Handbook, NASA-HDBK-2203 / NPR 7150.2"
+  local_artifact: "Дерево построения папок/1_NASA_SWE_057_Software_Architecture/01_SWE-057_Software_Architecture_Main.md"
+  extraction_mode: "engineering_standard_specification"
+  title: "SWE-057: Software Architecture Design and Requirements Transformation"
+  authors:
+    - "NASA Office of the Chief Engineer"
+    - "Software Engineering Working Group"
+  organization: "National Aeronautics and Space Administration (NASA)"
+  location:
+    section: "1. The Requirement; 1.1 Notes"
+claim:
+  type: standard_requirement
+  text: "Software systems must transform allocated and derived requirements into a documented architectural design with explicit component structures and hierarchical verification levels before detailed implementation."
+evidence:
+  quote: "The project shall transform the allocated and derived requirements into a documented software architectural design. The software architecture... comprises software components, the properties of those components, and the relationships between them."
+  extraction: engineering_standard_specification
+  verified: true
+interpretation:
+  statement: "Любая имплементация обязана опираться на детерминированную цепочку декомпозиции требований (система -> компонент -> модуль). Переход к написанию кода без предварительного описания архитектурных связей и интерфейсных контрактов нарушает стандарты надежности критического ПО и влечет неконтролируемые регрессии."
+  confidence: supported
+status: VERIFIED

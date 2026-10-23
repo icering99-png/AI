@@ -1,0 +1,517 @@
+# FIXES.md — План исправлений «Эталон ИИ» (PLAN-FIX-001)
+
+> **Status:** DRAFT — awaiting `APPROVE PLAN-FIX-001`
+> **Правило:** ничего из перечисленного НЕ применено. Каждый шаг можно выполнить вручную по этому файлу или попросить агента. Шаги независимы, порядок = приоритет.
+> **Формат шага:** Что → Как → Критерий готовности (по Gate 4: сырой вывод, не слова).
+> Базовая линия: 169/169 тестов зелёные (`python -m unittest discover -s tests`).
+
+---
+
+## FIX-01 [P0] Git: первый коммит в жизни репозитория
+
+**Что:** инициализировать историю. Без этого не работает НИ ОДИН git-гейт проекта (pre-commit hook, BranchGuard, TurnGuard) — они никогда не срабатывали.
+
+**Как** (из корня репозитория):
+
+1. Создать `.gitignore` со следующим содержимым:
+
+```gitignore
+__pycache__/
+*.pyc
+.pytest_cache/
+.venv/
+.snapshots/
+tmp/
+scratch/
+*.rar
+logs/*
+!logs/guard_audit.jsonl
+```
+
+2. Выполнить:
+
+```bash
+git add .gitignore AGENTS.md DECISIONS.md HANDOFF.md README.md failure_index.json state_manifest.json
+git add core/ tests/ rules/ schemas/ prompts/ plans/ KnowledgeBase/ .agents/ .gemini/ config_mirror/ TEMPLATE_PORTABLE/
+git commit -m "feat: initial baseline of Etalon AI governance core (169 tests green)"
+git tag v0.1.0-baseline
+```
+
+Не добавлять: `CHAT_HISTORY_EXPORT.md` (архив чата, не код), `devops_quest.rar` (дубликат папки), пустой файл `test`, `tmp/`, `scratch/`.
+
+**Критерий:** `git log --oneline` показывает коммит; `git status --short` пуст (кроме осознанно исключённого).
+
+---
+
+## FIX-02 [P0] pyproject.toml — воспроизводимость
+
+**Что:** закрепить, что нужно для запуска. Сейчас «zero-config bootstrap» из README не воспроизводим: в системе только Python 3.11 без pytest, а кэши остались от 3.12.
+
+**Как:** создать `pyproject.toml` в корне:
+
+```toml
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "etalon-core"
+version = "0.1.0"
+description = "Deterministic guard core for AI agent governance"
+requires-python = ">=3.11"
+dependencies = []
+
+[project.optional-dependencies]
+test = ["pytest>=8.0"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+```
+
+**Критерий:** `python -m unittest discover -s tests` по-прежнему зелёный; на чистой машине с Python 3.11+: `pip install -e ".[test]"` → `pytest` работает.
+
+---
+
+## FIX-03 [P0] Генератор манифеста — убрать ложь из метрики
+
+**Что:** `state_manifest.json` содержит 1 запись, а ADR-026 и HANDOFF заявляют «27 модулей, Zero Drift». RegressGuard верифицирует против пустого манифеста — это validation theater.
+
+**Как:** создать `scripts/build_manifest.py`:
+
+```python
+"""Regenerate state_manifest.json from actual core/ contents."""
+
+import hashlib
+import json
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parent.parent
+
+
+def hash_file(p: Path) -> str:
+    """Stream file content into SHA-256 hex digest."""
+    h = hashlib.sha256()
+    with p.open("rb") as f:
+        for chunk in iter(lambda: f.read(65536), b""):
+            h.update(chunk)
+    return h.hexdigest()
+
+
+def main() -> None:
+    """Write manifest with one hash per core module."""
+    entries = {}
+    for p in sorted((ROOT / "core").glob("*.py")):
+        entries[str(p).replace("\\", "/")] = hash_file(p)
+    out = ROOT / "state_manifest.json"
+    out.write_text(json.dumps(entries, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    print(f"manifest written: {len(entries)} modules")
+
+
+if __name__ == "__main__":
+    main()
+```
+
+Выполнить: `python scripts/build_manifest.py`
+
+**Критерий:** вывод `manifest written: N modules`, где N == количеству `core/*.py`; запись зафиксирована коммитом `chore: regenerate state manifest from core/`.
+
+---
+
+## FIX-04 [P1] Зеркала — собирать скриптом, не руками
+
+**Что:** три копии правил (root, TEMPLATE_PORTABLE, .gemini) синхронизировались вручную и уже разъехались: `.gemini` содержит устаревшую русскую версию регламента, README отправляет пользователей именно к ней.
+
+**Как:** создать `scripts/build_mirror.py`:
+
+```python
+"""Rebuild TEMPLATE_PORTABLE and .gemini mirrors from canonical sources."""
+
+import shutil
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parent.parent
+TPL = ROOT / "TEMPLATE_PORTABLE"
+
+COPY_DIRS = ["core", "rules", "schemas", "tests", "prompts", "KnowledgeBase", "scripts"]
+COPY_FILES = ["AGENTS.md", "DECISIONS.md", "README.md", "failure_index.json", "state_manifest.json", "pyproject.toml"]
+IGNORE = shutil.ignore_patterns("__pycache__", "*.pyc", ".pytest_cache")
+
+
+def sync_tpl() -> None:
+    """Refresh portable template from canonical root."""
+    for d in COPY_DIRS:
+        src = ROOT / d
+        if src.is_dir():
+            shutil.rmtree(TPL / d, ignore_errors=True)
+            shutil.copytree(src, TPL / d, ignore=IGNORE)
+    for f in COPY_FILES:
+        if (ROOT / f).is_file():
+            shutil.copy2(ROOT / f, TPL / f)
+
+
+def sync_gemini() -> None:
+    """Refresh .gemini rule mirror from canonical rules/."""
+    gem = ROOT / ".gemini" / "antigravity" / "rules"
+    gem.mkdir(parents=True, exist_ok=True)
+    for r in (ROOT / "rules").glob("*.md"):
+        shutil.copy2(r, gem / r.name)
+
+
+def main() -> None:
+    """Build all mirrors and report."""
+    sync_tpl()
+    sync_gemini()
+    print("mirrors rebuilt: TEMPLATE_PORTABLE + .gemini")
+
+
+if __name__ == "__main__":
+    main()
+```
+
+Порядок навсегда: `build_manifest.py` → `build_mirror.py` → коммит. Зеркала больше никогда не правятся руками.
+
+**Критерий:** `diff rules/02_UNIVERSAL_AI_GOVERNANCE.md .gemini/antigravity/rules/02_UNIVERSAL_AI_GOVERNANCE.md` — пусто; `diff -r core TEMPLATE_PORTABLE/core` (без `__pycache__`) — пусто.
+
+---
+
+## FIX-05 [P1] HANDOFF ужать до ≤50 строк
+
+**Что:** 455 строк (67KB) обязательного чтения при каждом старте сессии — сжигание контекста, противоречие собственному Gate 8 (см. Lost in the Middle: середину длинного контекста модель использует хуже всего).
+
+**Как:**
+
+1. `mkdir plans/archive` (если нет); текущее содержимое HANDOFF.md → `plans/archive/handoff-2026-10-20.md`.
+2. Новый `HANDOFF.md` — только три блока:
+
+```markdown
+# HANDOFF — Мост сессий (короткий!)
+
+## Текущее состояние (дата)
+- Базовая линия: 169/169 тестов зелёные, тег v0.1.0-baseline.
+- Проверено: state_manifest регенерируется скриптом; зеркала собираются скриптом.
+
+## Следующий шаг
+- Неделя 1 самоучителя (SELF_STUDY_GUIDE.md): Git, FIX-01..FIX-03.
+
+## Блокеры
+- Нет.
+```
+
+Правило дальше: HANDOFF — это «что сейчас / что дальше / что мешает», максимум 50 строк. Всё историческое — в `plans/archive/`.
+
+**Критерий:** `wc -l HANDOFF.md` ≤ 50.
+
+---
+
+## FIX-06 [P1] Доказать, что PreToolUse-хук реально вызывается
+
+**Что:** в `logs/guard_audit.jsonl` 23 записи — и все от внутренних прогонов пайплайна (SUB-01…), ни одной от реального перехвата инструмента IDE. Возможен и баг пути: `hooks.json` вызывает `python ../core/pre_tool_guard.py` — относительный путь, зависящий от cwd хука.
+
+**Как:**
+
+1. Добавить в `core/pre_tool_guard.py`, в `main()`, до записи в stdout — журналирование вызова:
+
+```python
+        log = _ROOT / "logs" / "hook_calls.jsonl"
+        try:
+            with log.open("a", encoding="utf-8") as fh:
+                fh.write(json.dumps({"ts": time.time(), "res": res.get("decision")}) + "\n")
+        except OSError:
+            pass
+```
+
+(потребуется `import time` наверху файла).
+
+2. Ручной смоук-тест из корня:
+
+```bash
+echo '{"toolCall":{"name":"edit_file","args":{"Path":"README.md"}}}' | python .agents/../core/pre_tool_guard.py
+```
+
+Ожидание: `{"decision": "deny", "reason": "RO_LOCK: Plan status COMPLETED"}` — план завершён, всё залочено, значит гвард работает.
+
+3. Главное: сделать одну реальную попытку правки в Antigravity и проверить, появилась ли запись в `logs/hook_calls.jsonl` с текущим таймстампом. Появилась — барьер существует. Не появилась — хук не запускается IDE (проверить формат `.agents/hooks.json` под текущую версию Antigravity), и «физический барьер» в ADR-026 существует только на бумаге.
+
+**Критерий:** в `logs/hook_calls.jsonl` есть запись с таймстампом реального действия в IDE, а не ручного запуска.
+
+---
+
+## FIX-07 [P2] Диета правил: 10 гейтов → 4 + конфиг лимитов
+
+**Что:** часть правил невыполнима или самопротиворечива: `chk_ident(limit=15)` нарушается собственным ядром (`_APPROVE_TOKEN_RE` = 17 симв.), идентификаторы тестов (`test_model_tier_escalation` = 26) под правило не подпадают вовсе; `view_file` (API Antigravity) захардкожен в «вендор-нейтральном» регламенте; полный запрет `getattr`/`importlib` отсекает легитимный код.
+
+**Как:**
+
+1. В `AGENTS.md` оставить 4 обязательных гейта:
+   - G1: план на диске + `APPROVE <PLAN-ID>` до правок кода;
+   - G2: успех = зелёный тест/`exit_code: 0` (сырой вывод, RAW);
+   - G3: критик не чинит (роль разделена), детерминированный оракул первичен;
+   - G4: failure-память обязательна (инцидент → failure_index).
+   Остальные 6 → в `rules/OPTIONAL_PROFILES.md` как опции.
+2. Числовые лимиты (ident ≤ 15 → 40; diff ≤ 30; slug ≤ 20; пакет ≤ 300) → в `schemas/limits.json`, гварды читают оттуда.
+3. Убрать `view_file` из формулировок Gate 5 (заменить на «перечитать изменённые строки любым средством чтения»).
+
+**Критерий:** `DefenseGuard.chk_ident(code, 40)` проходит по всем `core/*.py` и `tests/*.py`; в `AGENTS.md` ровно 4 обязательных гейта; ни одно правило не нарушается собственным кодом проекта.
+
+---
+
+## FIX-08 [P3] Разделить продукт и эталон
+
+**Что:** `devops_quest` (~3400 строк JS-викторины), `devops_quest.rar`, `CHAT_HISTORY_EXPORT.md` (107KB), пустой файл `test`, `tmp/`, `scratch/` — в «эталонном» корне. Нарушение собственного принципа Architectural Map Discipline.
+
+**Как:**
+
+1. `devops_quest/` → отдельный репозиторий (свой git init, первый коммит, тег `v1.0.0`).
+2. Удалить: `devops_quest.rar` (дубликат), пустой `test`, `tmp/`, `scratch/`.
+3. `CHAT_HISTORY_EXPORT.md` → `plans/archive/` или удалить (история чата — не источник истины по вашему же контракту).
+4. После FIX-01..04 — прогнать `scripts/build_mirror.py` и закоммитить.
+
+**Критерий:** корень эталона содержит только governance-артефакты; `devops_quest` живёт в своём репозитории с зелёным CI.
+
+---
+
+## FIX-09 [P3] CI: GitHub Actions
+
+**Что:** Gate 4 (Proof of Work) не должен зависеть от честности модели — только от автоматики.
+
+**Как:** создать `.github/workflows/tests.yml`:
+
+```yaml
+name: tests
+on: [push, pull_request]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Run test suite
+        run: python -m unittest discover -s tests -v
+      - name: Rebuild manifest and check drift
+        run: |
+          python scripts/build_manifest.py
+          git diff --exit-code state_manifest.json || (echo "STATE MANIFEST DRIFT" && exit 1)
+```
+
+Push репозитория на GitHub (приватный — бесплатно), добавить бейдж статуса в README.
+
+**Критерий:** зелёный прогон на GitHub; намеренная правка `core/*.py` без регенерации манифеста роняет джобу «drift».
+
+---
+
+## FIX-10 [P2] Реестр моделей: веса под домен (кодинг / игры / 3D)
+
+**Что:** цель «подключать разные веса для игр, кодинга, 3D» должна жить в данных, а не в коде. Сейчас выбор модели размазан по `escalation_router.py` / `fast_router.py`.
+
+**Как:** создать `schemas/model_registry.json`:
+
+```json
+{
+  "default_profile": "coding",
+  "profiles": {
+    "coding": {
+      "local_model": "qwen2.5-coder:7b",
+      "fallback_local": ["qwen2.5-coder:3b", "qwen2.5-coder:1.5b"],
+      "cloud": "gemini-pro",
+      "oracle": "python -m unittest discover -s tests",
+      "allowed_paths": ["core/", "tests/", "scripts/"]
+    },
+    "game": {
+      "local_model": "qwen2.5:7b",
+      "cloud": "gemini-pro",
+      "oracle": "node scripts/game_selfcheck.js",
+      "allowed_paths": ["devops_quest/"]
+    },
+    "threed": {
+      "local_model": "qwen2.5:7b",
+      "cloud": "gemini-pro",
+      "oracle": "blender --background --python scripts/3d/check_scene.py",
+      "allowed_paths": ["assets/", "scripts/3d/"]
+    }
+  }
+}
+```
+
+Доработать `core/fast_router.py`: rule-based классификация (по путям и ключевым словам) → профиль → модель из реестра. Классификация без LLM. Загрузка реестра — Fail-Closed: неизвестный или битый профиль → BLOCK. Оракул для game-профиля определите по факту (для devops_quest это node-скрипт, валидирующий структуру questions.js/curriculum.js). Для Antigravity добавить в реестр поле `ui_model` (какую модель выбрать в UI на роль критика/рутины); имена UI-моделей меняются — держите их в `docs/ANTIGRAVITY_SETUP.md`, в реестре только стабильные идентификаторы.
+
+**Критерий:** смена веса для кодинга = правка только JSON; тест: путь `devops_quest/…` выбирает профиль `game`; синтаксическая порча реестра роняет загрузку с явной ошибкой.
+
+---
+
+## FIX-11 [P2] Доменные профили правил (plug-in вместо одного промпта на всё)
+
+**Что:** универсальность = тонкий контракт + подключаемые профили. Ядро не должно знать про 3D/игры (ADR-001 когда-то правильно вырезал 3D/CAD — домен возвращается профилем, а не в конституцию).
+
+**Как:** создать `rules/profiles/` с файлами по единой структуре из 3 блоков: (1) правила домена, (2) allowed_paths, (3) команда-оракул:
+
+- `CODING.md` — на 90% готов из текущего `CODING_STANDARDS.md`;
+- `GAME.md` — структура игровых данных, запрет менять данные вопросов/уровней без самопроверки, оракул `node scripts/game_selfcheck.js`;
+- `THREED.md` — bpy-скрипты только с тайп-хинтами; каждый экспортируемый ассет валидируется glTF-Validator; изменение сцены требует headless-прогона `check_scene.py` с `exit_code: 0`.
+
+Подключение — строкой в таблицу Progressive Disclosure Navigator в `AGENTS.md` (триггер: тип проекта / затронутые пути). Профиль подгружается по требованию, ядро остаётся доменно-слепым.
+
+**Критерий:** `AGENTS.md` содержит строку профиля с триггером; в ядре ни слова про 3D/игры; добавление нового домена = один файл в `rules/profiles/` + запись в реестре.
+
+---
+
+## FIX-12 [P3] 3D-контур: детерминированный оракул (Blender + glTF)
+
+**Что:** у 3D нет «тестов» в привычном виде — их нужно создать, иначе профиль THREED не имеет права на существование (домен без оракула не готов).
+
+**Как:**
+
+1. Установить Blender с CLI (проверка: `blender --version` из терминала).
+2. Написать `scripts/3d/check_scene.py`: открывает сцену, проверяет обязательные объекты/материалы/лимиты полигонов, печатает отчёт, завершается с кодом 0/1.
+3. Подключить glTF-Validator для ассетов: `gltf_validator asset.gltf` → exit_code.
+4. Позже (не сразу): золотой рендер — сравнение рендера с эталонным изображением с допуском по пикселям.
+
+**Критерий:** порча сцены (удалённый обязательный объект) роняет `check_scene.py` с ненулевым кодом; корректная сцена проходит; проверка работает в CI без GUI.
+
+---
+
+## FIX-13 [P3] Портативность: e2e-тест «закинул — работает»
+
+**Что:** главный признак README («скопировал — любой агент работает») сегодня не проверяется автоматически.
+
+**Как:** `scripts/check_portable.py` (+ тест-обёртка):
+
+1. Скопировать `TEMPLATE_PORTABLE/` во временную папку.
+2. Запустить там `python -m unittest discover -s tests`.
+3. Проверить наличие обязательных файлов (AGENTS.md, rules/, schemas/, core/).
+4. Добавить шаг в CI из FIX-09.
+
+**Критерий:** скрипт зелёный локально и в CI; во временной копии не хватает ни одного файла для старта; тест ловит удаление любого обязательного файла.
+
+---
+
+## FIX-14 [P1] Контур самоулучшения: ошибка закрыта = есть ловушка
+
+**Что:** сегодня `failure_index.json` — дневник: записи не связаны с тестами, и ничто механически не мешает наступить на те же грабли. Для 3D/моддинга это главный риск.
+
+**Как:**
+
+1. Схема записи v2 — добавить поля:
+
+```json
+{
+  "id": "FAIL-0017",
+  "domain": "threed",
+  "symptom": "Экспорт glTF с вывернутыми нормалями",
+  "root_cause": "... (разбор 5 почему)",
+  "detection": "check_scene.py: chk_normals",
+  "regression_test": "tests/test_threed_defects.py::test_flipped_normals",
+  "status": "RESOLVED"
+}
+```
+
+2. Инвариант анти-дежавю: статус `RESOLVED` разрешён ТОЛЬКО при непустом `regression_test`, который существует и проходит. Записи без ловушки — статус `DOCUMENTED` (дневник), без права считаться закрытыми.
+3. `scripts/review_failures.py`:
+   - выводит `RESOLVED` без теста или с падающим тестом → `exit_code: 1`;
+   - группирует повторяющиеся симптомы (один симптом ≥ 2 раз = сигнал, что ловушки нет);
+   - добавляется шагом в CI (FIX-09) — инвариант проверяется автоматически.
+
+**Критерий:** скрипт ловит запись `RESOLVED` без теста; существующие 16 записей либо получают тесты, либо переводятся в `DOCUMENTED`; CI падает при нарушении инварианта.
+
+---
+
+## FIX-15 [P2] Галерея дефектов 3D/моддинга: известные-плохие фикстуры
+
+**Что:** в 3D и моддинге уроки нельзя держать текстом — нужен материал, который оракул обязан отклонять. Каждая пойманная ошибка становится физической ловушкой навсегда.
+
+**Как:** создать `assets/defects/` с минимальными воспроизведениями:
+
+- `flipped_normals.blend` — вывернутые нормали → `check_scene.py` обязан упасть;
+- `ngon_mesh.blend` — N-угольники/вырожденная геометрия → падение;
+- `broken_gltf/` — ассет, который glTF-Validator обязан пометить;
+- `mods/conflict_pair/` — два тестовых мода, меняющих один ассет → валидатор модов обязан репортить конфликт;
+- `mods/bad_loadorder/` — неверный порядок загрузки → падение линта.
+
+`check_scene.py` и мод-валидатор прогоняются по всей галерее: каждый дефект ДОЛЖЕН быть отклонён (не отклонил — оракул слабее реальной ошибки). Тест-обёртка `tests/test_defect_gallery.py`.
+
+**Критерий:** удаление любой фикстуры или ослабление оракула роняет тест галереи; для каждой записи failure_index домена threed/modding существует воспроизведение в галерее.
+
+---
+
+## FIX-16 [P2] Профиль MODDING: валидатор модов как оракул
+
+**Что:** моддинг возвращается в эталон (наследие universal-modder из ADR-003) — но профилем, не в ядро. У модов своя специфика повторяющихся ошибок: версии игры после патчей, порядок загрузки, конфликты ассетов, регистр путей, кодировки локализаций.
+
+**Как:**
+
+1. `rules/profiles/MODDING.md` — правила домена: структура мода обязательна к проверке; правка чужих файлов ядра игры запрещена (только оверлеи); каждый собранный мод проходит валидатор + smoke-запуск; ссылка на официальный док-репозиторий инструментов игры — первоисточник.
+2. `schemas/model_registry.json` — домен `modding`: локальный вес для рутины, облачная модель для анализа конфликтов; `allowed_paths: ["mods/", "tools/modval/"]`.
+3. `tools/modval/` — детерминированный валидатор модов:
+   - структура: манифест, обязательные файлы, целостность архива;
+   - конфликты: два мода меняют один и тот же ассет → WARN/FAIL;
+   - load order: известные правила порядка → линт;
+   - smoke-запуск: запуск игры с одним модом, скан лога на ошибки, exit_code/таймаут.
+4. Фикстуры из FIX-15 (`mods/conflict_pair/`, `mods/bad_loadorder/`) — эталон «обязано быть поймано».
+
+**Критерий:** валидатор отклоняет все фикстуры галереи и принимает эталонный корректный мод; правка правил моддинга идёт только через шлюз (Candidate → APPROVE), факты (записи ошибок, фикстуры) добавляются свободно.
+
+---
+
+## FIX-17 [P1] Antigravity-адаптер: чек-лист «закинул — работает за 15 минут»
+
+**Что:** эталон заявлен универсальным, но нет точечной инструкции для вашей основной IDE. Нужен один документ, по которому свежий воркспейс в Antigravity подключается к эталону без импровизации.
+
+**Как:** создать `docs/ANTIGRAVITY_SETUP.md` — чек-лист на 1–2 страницы:
+
+1. Глобальные правила: `python scripts/build_mirror.py`, затем `.gemini/antigravity/rules/` → `~/.gemini/antigravity/rules/`.
+2. Воркспейс: `AGENTS.md` в корне — Antigravity читает его нативно; правила не дублировать в двух местах.
+3. Хуки: убедиться, что `.agents/hooks.json` поддерживается текущей версией Antigravity; после первой правки — запись в `logs/hook_calls.jsonl` (доказательство по FIX-06).
+4. Модели по ролям (таблица): ревью/архитектура — старшая Gemini в UI; рутина/классификация — Flash; перевод/мелочи — локальный Ollama. Имена моделей меняются — таблица живёт здесь, в реестре только идентификаторы.
+5. Первая фраза новой сессии (шаблон): «Работай по AGENTS.md. Прочитай HANDOFF.md, DECISIONS.md, failure_index.json. До `APPROVE <PLAN-ID>` — Read-Only. Успех = зелёный оракул в терминале.»
+6. Доказательства: только raw stdout из терминала Antigravity; скриншоты/артефакты — точечно, по одному на проверку.
+7. Knowledge: краткие строки `FAIL-ID: симптом → ловушка`; канон — только failure_index.json.
+
+**Критерий:** новый воркспейс в Antigravity проходит чек-лист за 15 минут без правок файлов эталона; хук срабатывает (запись в логе); при смене версии IDE обновляется документ, а не код.
+
+---
+
+## FIX-18 [P2] GAME-оракул: браузер Antigravity + Playwright в CI
+
+**Что:** у профиля GAME нет реального оракула. В сессии удобно проверять браузером Antigravity, но CI не зависит от IDE — нужен тот же сценарий в headless.
+
+**Как:**
+
+1. `tests/e2e/game.spec.js` на Playwright: открыть devops_quest (file:// или локальный сервер), собрать ошибки консоли — ожидать 0; проверить наличие ключевых узлов DOM; клик по ответу — состояние изменилось.
+2. В реестре (FIX-10): `"oracle": "npx playwright test"` для профиля game.
+3. В сессии Antigravity — тот же сценарий руками через браузер IDE; артефакт-скриншот — визуальный чек для человека, не для гейта.
+
+**Критерий:** синтаксическая порча `app.js` роняет e2e-тест; зелёный прогон в CI без GUI; сценарий один и тот же в сессии и в CI.
+
+---
+
+## FIX-19 [P2] Мост Knowledge ↔ failure_index (память без потерь)
+
+**Что:** панель Knowledge в Antigravity накапливает выводы агента, но живёт в IDE: не в git, не проверяется CI и теряется при переустановке. Канон памяти — `failure_index.json`; Knowledge — только витрина.
+
+**Как:**
+
+1. `scripts/log_failure.py`: интерактивный ввод (домен, симптом, первопричина по «5 почему») → генерирует запись (id, статус `DOCUMENTED`, пустой regression_test) → печатает готовую короткую строку для панели: `FAIL-0017: glTF export flips normals → ловушка: check_scene.chk_normals`.
+2. Ритуал конца сессии в AGENTS.md: новые ошибки — только через скрипт; строка для Knowledge копируется в панель руками (30 секунд).
+3. Инвариант FIX-14 не меняется: `RESOLVED` — только с зелёным тестом.
+
+**Критерий:** запись, созданная скриптом, валидна против схемы; в Knowledge не появляется FAIL-ID, отсутствующего в файле; переустановка IDE не теряет ни одного урока.
+
+---
+
+## Порядок выполнения (DAG)
+
+```
+FIX-01 (git) ──> FIX-02 (pyproject) ──> FIX-03 (manifest) ──> FIX-04 (mirrors) ──> FIX-13 (portability) ──> FIX-17 (Antigravity setup)
+                                   │
+                                   ├──> FIX-05 (HANDOFF)      [независимо]
+                                   ├──> FIX-06 (hook proof)   [независимо; доказательство для FIX-17]
+                                   ├──> FIX-14 (failure loop) ──> FIX-19 (Knowledge bridge)
+                                   └──> FIX-07 (rules diet) ──> FIX-10 (model registry) ──> FIX-11 (profiles) ──> FIX-12 (3D oracle) ──> FIX-15 (defect gallery)
+                                                             │                        ├─> FIX-16 (modding profile)
+                                                             │                        └─> FIX-18 (game e2e oracle)
+                                                             └──> FIX-08 (split) ──> FIX-09 (CI)
+```
+
+Каждый шаг завершается коммитом. После FIX-09 история репозитория станет тем самым Backup→Golden механизмом, который был заявлен, но не существовал. Ветка FIX-10 → FIX-12/15/16/18 — путь к универсальному эталону: веса под домен лежат в реестре, доменные знания — в профилях, у каждого домена свой детерминированный оракул. FIX-14/15 замыкают контур самоулучшения: ошибка считается закрытой только тогда, когда её автоматически ловит ловушка. FIX-17..19 — заточка под Antigravity: IDE остаётся интерфейсом, а канон (оракулы, реестр, память) живёт в файлах и CI.

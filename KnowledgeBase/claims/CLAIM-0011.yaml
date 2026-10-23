@@ -1,0 +1,22 @@
+id: CLAIM-0011
+source:
+  id: SRC-0020
+  file: "VSCode_Agent_Plugins_Spec.md"
+  title: "Agent Instructions Scoping and Glob Patterns Standard"
+  authors:
+    - "GitHub Copilot Architecture Team"
+    - "Agent Plugins 1.0 Working Group"
+  organization: "Microsoft / GitHub"
+  location:
+    section: "Repository Instructions and Glob"
+claim:
+  type: empirical_observation
+  text: "Restricting instruction loading to specific file paths using glob patterns (applyTo) prevents irrelevant constraint injection, eliminating negative interference and reducing context window overhead."
+evidence:
+  quote: "Path-specific instructions trigger exclusively when the active buffer matches the glob pattern, preventing cross-domain instruction leakage and minimizing prompt token bloat."
+  extraction: manual_spec_read
+  verified: true
+interpretation:
+  statement: "Правила кодирования, ограничения AST и запреты опасных вызовов должны быть строго привязаны к соответствующим расширениям и путям через маски glob. Применение глобальных правил кода к файлам документации и планов не допускается во избежание галлюцинаций и непроизводительного расхода токенов."
+  confidence: supported
+status: VERIFIED

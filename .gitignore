@@ -1,0 +1,12 @@
+__pycache__/
+*.pyc
+.pytest_cache/
+.venv/
+.snapshots/
+tmp/
+scratch/
+*.rar
+CHAT_HISTORY_EXPORT.md
+logs/*
+!logs/guard_audit.jsonl
+TEMPLATE_PORTABLE/
