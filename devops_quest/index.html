@@ -35,6 +35,10 @@
           <span class="badge-label">Серия:</span>
           <span id="user-streak" class="badge-value accent">🔥 1 дн.</span>
         </div>
+        <div class="stat-badge">
+          <span class="badge-label">День:</span>
+          <span id="daily-mini" class="badge-value accent" style="cursor: pointer" title="Открыть чек-лист рабочего дня">0/5</span>
+        </div>
         <div class="action-buttons">
           <button id="btn-bind-file" class="btn btn-sm" title="Привязать файл progress.json в папке игры — прогресс будет автоматически писаться в файл репозитория (Chrome/Edge)">🔗 Автосейв в файл</button>
           <button id="btn-export-profile" class="btn btn-sm" title="Экспорт профиля в JSON">📥 Экспорт</button>
@@ -355,6 +359,18 @@
       <!-- ВКЛАДКА 6: Памятка Андрея и Справочник -->
       <section id="tab-cheatsheet" class="tab-pane">
         <div class="cheatsheet-workspace">
+          <div class="andrey-rules-banner daily-ritual-card">
+            <h2>📅 Мой рабочий день — памятка на каждый день</h2>
+            <p id="daily-date-label" class="daily-date">Сегодня: —</p>
+            <div class="daily-checklist">
+              <label><input type="checkbox" id="dchk-0"> <span><strong>☀️ Утро:</strong> двойной клик по <code>daily.bat</code> в папке игры — скачал свежее</span></label>
+              <label><input type="checkbox" id="dchk-1"> <span><strong>🎮 Игра:</strong> открыл <code>index.html</code> и нажал «🔗 Автосейв в файл» (выбрал <code>progress.json</code>)</span></label>
+              <label><input type="checkbox" id="dchk-2"> <span><strong>📚 Учёба:</strong> прошёл 1 урок ИЛИ ответил на 5 вопросов экзамена</span></label>
+              <label><input type="checkbox" id="dchk-3"> <span><strong>🔥 Серия:</strong> зашёл в игру — счётчик серии в шапке не порвался</span></label>
+              <label><input type="checkbox" id="dchk-4"> <span><strong>🌙 Вечер:</strong> ещё раз двойной клик по <code>daily.bat</code> — день сохранён и загружен</span></label>
+            </div>
+            <p class="daily-progress"><strong id="daily-progress-label">День: 0/5</strong></p>
+          </div>
           <div class="andrey-rules-banner">
             <h2>🌿 Памятка Андрея для Данила: «Git без паники»</h2>
             <div class="rules-grid">

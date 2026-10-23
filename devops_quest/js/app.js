@@ -9,6 +9,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const STORAGE_KEY = "devops_quest_user_profile_v1";
   let userProfile = loadUserProfile();
   touchDailyStreak();
+  renderDailyRitual();
 
   let activeLesson = null;
   let examQuestions = [];
@@ -766,6 +767,7 @@ document.addEventListener("DOMContentLoaded", () => {
     p.streakDays = p.streakDays || 0;
     p.lastVisitDay = p.lastVisitDay || "";
     p.dailyLog = Array.isArray(p.dailyLog) ? p.dailyLog : [];
+    p.dailyChecks = p.dailyChecks && typeof p.dailyChecks === "object" ? p.dailyChecks : {};
     return p;
   }
 
@@ -839,6 +841,55 @@ document.addEventListener("DOMContentLoaded", () => {
   function updateAutoSaveUI() {
     const btn = document.getElementById("btn-bind-file");
     if (btn) btn.textContent = progressFileHandle ? "✅ Автосейв: progress.json" : "🔗 Автосейв в файл";
+  }
+
+  // --- 9.2 Чек-лист рабочего дня (памятка) ---
+  const DAILY_ITEMS = 5;
+
+  function renderDailyRitual() {
+    const dateEl = document.getElementById("daily-date-label");
+    const progressEl = document.getElementById("daily-progress-label");
+    const boxes = [];
+    for (let i = 0; i < DAILY_ITEMS; i++) boxes.push(document.getElementById("dchk-" + i));
+    if (!dateEl || boxes.some(b => !b)) return;
+
+    const today = todayStr(new Date());
+    const state = userProfile.dailyChecks[today] || new Array(DAILY_ITEMS).fill(false);
+    userProfile.dailyChecks[today] = state;
+
+    const days = ["воскресенье", "понедельник", "вторник", "среда", "четверг", "пятница", "суббота"];
+    dateEl.textContent = `Сегодня: ${today} (${days[new Date().getDay()]})`;
+
+    boxes.forEach((b, i) => {
+      b.checked = !!state[i];
+      b.onchange = () => {
+        state[i] = b.checked;
+        saveUserProfile();
+        updateDailyProgress(boxes, progressEl);
+      };
+    });
+    updateDailyProgress(boxes, progressEl);
+
+    const mini = document.getElementById("daily-mini");
+    if (mini) {
+      mini.style.cursor = "pointer";
+      mini.title = "Открыть чек-лист рабочего дня";
+      mini.onclick = () => {
+        const tabBtn = document.querySelector('.tab-btn[data-tab="tab-cheatsheet"]');
+        if (tabBtn) tabBtn.click();
+      };
+    }
+  }
+
+  function updateDailyProgress(boxes, progressEl) {
+    const done = boxes.filter(b => b.checked).length;
+    if (progressEl) {
+      progressEl.textContent = done >= DAILY_ITEMS
+        ? "🎉 День закрыт! Серия растёт — так держать."
+        : `День: ${done}/${DAILY_ITEMS}`;
+    }
+    const mini = document.getElementById("daily-mini");
+    if (mini) mini.textContent = `${done}/${DAILY_ITEMS}`;
   }
 
   function addXP(amount) {
@@ -924,7 +975,8 @@ document.addEventListener("DOMContentLoaded", () => {
         competencies: { git: 0, pr: 0, qa: 0, cicd: 0, sec: 0, culture: 0 },
         streakDays: 0,
         lastVisitDay: "",
-        dailyLog: []
+        dailyLog: [],
+        dailyChecks: {}
       };
       saveUserProfile();
       updateUserStatsUI();

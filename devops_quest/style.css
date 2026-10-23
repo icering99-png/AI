@@ -1149,3 +1149,59 @@ body {
   font-size: 20px;
   cursor: pointer;
 }
+
+/* === Чек-лист рабочего дня (памятка) === */
+.daily-ritual-card .daily-date {
+  font-weight: 600;
+  color: var(--accent-cyan);
+  margin: 8px 0 14px;
+}
+
+.daily-ritual-card .daily-checklist {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-width: 760px;
+}
+
+.daily-ritual-card .daily-checklist label {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 16px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  background: var(--bg-tertiary);
+  cursor: pointer;
+  line-height: 1.5;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.daily-ritual-card .daily-checklist label:hover {
+  background: #2d3344;
+  border-color: var(--accent-blue);
+}
+
+.daily-ritual-card .daily-checklist input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  margin-top: 3px;
+  flex: none;
+  cursor: pointer;
+  accent-color: var(--accent-green);
+}
+
+.daily-ritual-card .daily-checklist label:has(input:checked) {
+  border-color: var(--accent-green);
+  background: rgba(63, 181, 80, 0.08);
+}
+
+.daily-ritual-card .daily-checklist label:has(input:checked) span {
+  opacity: 0.65;
+}
+
+.daily-ritual-card .daily-progress {
+  margin-top: 14px;
+  font-size: 1.05em;
+  color: var(--accent-yellow);
+}
