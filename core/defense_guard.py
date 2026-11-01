@@ -9,16 +9,26 @@ _APPROVE_TOKEN_RE = re.compile(r"^APPROVE\s+([A-Za-z0-9_\-]+)$")
 _ENC_RE = re.compile(
     r"(?i)(?:[-/](?:encodedcommand|encoded|enco|enc)\b|\b(?:powershell|pwsh)\b.*[-/](?:e|enc|encodedcommand)\b|\bfrombase64string\b)"
 )
+_DESTRUCTIVE_CMD_RE = re.compile(
+    r"(?i)(?:\b(?:rm)\b\s+.*-(?:rf?|fr?)\b|"
+    r"\b(?:del|erase)\b\s+.*(?:/s|/f)\b|"
+    r"\b(?:rmdir|rd)\b\s+.*(?:/s\b|-r\b)|"
+    r"\b(?:remove-item|ri)\b\s+.*-(?:recurse|r)\b.*-(?:force|f)\b|"
+    r"\b(?:remove-item|ri)\b\s+.*-(?:force|f)\b.*-(?:recurse|r)\b|"
+    r"\bgit\s+(?:push\b|reset\s+--hard\b|clean\s+-[a-z]*f\b)|"
+    r"\bset-content\b.*(?:agents\.md|hooks\.json|coding_standards\.md)|"
+    r"\bpython\b.*-c\s+.*(?:\.write\(|open\([^)]+['\"]w['\"]|os\.remove|shutil\.rmtree))"
+)
 _NET_CMD_RE = re.compile(
     r"(?i)\b(?:curl|wget|iwr|irm|invoke-webrequest|invoke-restmethod|certutil|bitsadmin)\b"
 )
 _NET_LIB_RE = re.compile(
-    r"(?i)\b(?:webclient|httpclient|system\.net|urllib|requests|httpx|aiohttp|fetch|axios)\b"
+    r"(?i)\b(?:webclient|httpclient|system\.net|urllib|requests|httpx|aiohttp|axios)\b|(?<!\bgit\s)\bfetch\b"
 )
 _REC_LIST_RE = re.compile(
-    r"(?i)(?:\b(?:get-childitem|gci)\b.*-(?:recurse|r)\b|\bdir\b.*/s\b|\bls\b.*-r\b|\bfind\b\s+[^|\n]+$)"
+    r"(?i)(?:\b(?:get-childitem|gci)\b.*-(?:recurse|r)\b|\bdir\b.*/s\b|\bls\b.*-r\b|\bfind\b\s+\.\s*$)"
 )
-_GC_RE = re.compile(r"(?i)\b(?:get-content|gc)\b")
+_GC_RE = re.compile(r"(?i)(?<!\bgit\s)\b(?:get-content|gc)\b")
 _GC_LIMIT_RE = re.compile(
     r"(?i)-(?:totalcount|head|tail|first|last)\b|\b(?:select-object|select)\b.*-(?:first|last)\b"
 )
@@ -214,6 +224,14 @@ class DefenseGuard:
         return True, "OK"
 
     @classmethod
+    def _chk_destructive(cls, cmd: str) -> tuple[bool, str]:
+        """Block destructive file removals, hard resets and unauthorized overwrites (AUDIT-3.3)."""
+        norm = re.sub(r"[`\^]", "", cmd)
+        if _DESTRUCTIVE_CMD_RE.search(norm):
+            return False, "BANNED_DESTRUCTIVE_COMMAND"
+        return True, "OK"
+
+    @classmethod
     def _chk_enc(cls, cmd: str) -> tuple[bool, str]:
         """Detect encoded commands."""
         if _ENC_RE.search(cmd):
@@ -226,6 +244,8 @@ class DefenseGuard:
         norm = re.sub(r"[`\"'\^]", "", cmd)
         if _NET_CMD_RE.search(norm):
             return False, "BANNED_NETWORK_TOOL"
+        if re.match(r"(?i)^\s*pip\s+(?:show|list|check)\b", norm):
+            return True, "OK"
         if _NET_LIB_RE.search(norm):
             return False, "BANNED_NETWORK_API"
         return True, "OK"
@@ -243,9 +263,12 @@ class DefenseGuard:
 
     @classmethod
     def chk_cmd(cls, cmd: str) -> tuple[bool, str]:
-        """Check command against encoded, network and flood dumping vectors."""
+        """Check command against destructive, encoded, network and flood dumping vectors."""
         if not isinstance(cmd, str) or not cmd.strip():
             return False, "EMPTY_COMMAND"
+        ok_dest, dest_msg = cls._chk_destructive(cmd)
+        if not ok_dest:
+            return False, dest_msg
         ok_enc, enc_msg = cls._chk_enc(cmd)
         if not ok_enc:
             return False, enc_msg
