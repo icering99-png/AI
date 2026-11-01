@@ -46,8 +46,6 @@
   10. `GATE 10 [Fail-Closed]`: Отказ по умолчанию при любых сомнениях или превышении лимитов.
 
 ### Научно-доказательная база (KnowledgeBase)
-* **`PLAN_EVIDENCE_BASED_ARCHITECTURE.md`:** Мастер-план архитектуры по 7-уровневой формуле:
-  $$\text{SOURCE} \to \text{CLAIM} \to \text{RULE} \to \text{POLICY} \to \text{GATE} \to \text{EVIDENCE} \to \text{STATE}$$
 * **`KnowledgeBase/manifest.yaml`:** Манифест версий, хэшей и реестра доказательств.
 * **`KnowledgeBase/claims/`:** Атомарные карточки клеймов со строгими цитатами:
   * `CLAIM-0001` (Google DeepMind 2023): Деградация рассуждений при самокоррекции без внешнего фидбека.
