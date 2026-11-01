@@ -1,5 +1,7 @@
 """Subplan Decomposer ensuring <= 30 lines diff budget."""
 
+from core.slug_gen import make_slug
+
 
 class SubplanDec:
     """Decomposes tasks into atomic DAG subplans with diff limit <= 30."""
@@ -14,6 +16,7 @@ class SubplanDec:
         return {
             "id": sub_id,
             "title": clean_title,
+            "slug": make_slug(clean_title),
             "max_diff": min(max_diff, 30),
             "depends_on": dep,
             "status": "PENDING",
@@ -57,16 +60,20 @@ class SubplanDec:
         if len(ttl) > 30:
             ttl = ttl[:30].rsplit(" ", 1)[0]
         dep = sub.get("depends_on")
+        title_a = f"Part 1: Interface of {ttl}"
+        title_b = f"Part 2: Logic of {ttl}"
         sub_a = {
             "id": f"{sid}a"[:15],
-            "title": f"Part 1: Interface of {ttl}",
+            "title": title_a,
+            "slug": make_slug(title_a),
             "max_diff": 15,
             "depends_on": dep,
             "status": "PENDING",
         }
         sub_b = {
             "id": f"{sid}b"[:15],
-            "title": f"Part 2: Logic of {ttl}",
+            "title": title_b,
+            "slug": make_slug(title_b),
             "max_diff": 15,
             "depends_on": sub_a["id"],
             "status": "PENDING",

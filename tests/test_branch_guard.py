@@ -27,6 +27,13 @@ class TestBranchGuard(unittest.TestCase):
         self.assertEqual(item["status"], "DISPROVEN")
         self.assertIn("AST violation", item["root_cause"])
 
+    def test_hypo_branch_name_slugification(self) -> None:
+        """Verify hypothesis branch name normalizes dirty names safely."""
+        from core.slug_gen import make_slug
+        slug = make_slug("Test Dirty Name #123!", max_len=15)
+        self.assertEqual(slug, "test-dirty-name")
+        self.assertEqual(len(slug), 15)
+
 
 if __name__ == "__main__":
     unittest.main()

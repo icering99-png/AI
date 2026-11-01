@@ -5,6 +5,8 @@ import re
 import subprocess
 from pathlib import Path
 
+from core.slug_gen import make_slug
+
 
 class BranchGuard:
     """Manages hypothesis scratch branches and failure logging."""
@@ -37,7 +39,8 @@ class BranchGuard:
     @classmethod
     def create_hypo(cls, name: str) -> tuple[bool, str]:
         """Create and checkout temporary hypothesis scratch branch."""
-        bname = f"scratch/hypo-{name.strip()[:10]}"
+        clean_name = make_slug(name, max_len=15) or "hypo"
+        bname = f"scratch/hypo-{clean_name}"
         code, out = cls._run_git(["checkout", "-b", bname])
         return (code == 0), out or bname
 
@@ -53,7 +56,7 @@ class BranchGuard:
         from datetime import date
         if not isinstance(name, str) or not name.strip():
             return False
-        clean_name = re.sub(r"[^A-Za-z0-9_\-]", "", name.strip())[:10]
+        clean_name = make_slug(name, max_len=15)
         if not clean_name:
             return False
 
