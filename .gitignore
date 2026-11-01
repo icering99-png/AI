@@ -10,3 +10,8 @@ CHAT_HISTORY_EXPORT.md
 logs/*
 !logs/guard_audit.jsonl
 TEMPLATE_PORTABLE/
+.env
+.telegram_offset
+sandboxes/
+inbox/
+outbox/
